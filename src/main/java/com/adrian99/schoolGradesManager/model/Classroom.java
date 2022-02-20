@@ -2,7 +2,9 @@ package com.adrian99.schoolGradesManager.model;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "Classrooms")
@@ -16,12 +18,11 @@ public class Classroom {
     private User classMaster;
 
     @OneToMany
-    private List<User> students = new ArrayList<>();
+    private Set<User> students = new HashSet<>();
 
     private String name;
 
-
-    public Classroom(User classMaster, List<User> students, String name) {
+    public Classroom(User classMaster, Set<User> students, String name) {
         this.classMaster = classMaster;
         this.students = students;
         this.name = name;
@@ -46,11 +47,11 @@ public class Classroom {
         this.classMaster = teacher;
     }
 
-    public List<User> getStudents() {
+    public Set<User> getStudents() {
         return students;
     }
 
-    public void setStudents(List<User> students) {
+    public void setStudents(Set<User> students) {
         this.students = students;
     }
 
