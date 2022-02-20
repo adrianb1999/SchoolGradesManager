@@ -1,9 +1,119 @@
 <html>
 <body>
-<div class="page" th:fragment="teacher">
-    <h3 style="color: white">
-        TEACHER
-    </h3>
+<div class="page" th:fragment="admin">
+    <div class="left">
+        <div class="logo">
+            <h2>School Grades Manager by adrian99</h2>
+        </div>
+        <div class="leftButtons btn-toggle-panel" data-target="#teachersInfo">
+            <div class="icon">
+                <span class="material-icons md-36">account_circle</span>
+            </div>
+            <h3>My courses</h3>
+        </div>
+
+        <div class="leftButtons btn-toggle-panel" data-target="#studentsInfo">
+            <div class="icon">
+                <span class="material-icons md-36">face</span>
+            </div>
+            <h3>My classroom</h3>
+        </div>
+
+        <div class="leftButtons logout" id="logout">
+            <div class="icon">
+                <span class="material-icons md-36">logout</span>
+            </div>
+            <h3>Logout</h3>
+        </div>
+    </div>
+    <div class="right">
+        <div class="panels">
+            <div class="panel active" id="myCourses">
+                <div class="panel-head">
+                    <div class="tableInfoLeft">
+                        <h2>My courses</h2>
+                    </div>
+                    <div class="tableInfoRight">
+                       <select id="teacherClassroomsList" onchange="teacherLoadStudent()">Select course</select>
+                    </div>
+                </div>
+                <div class="teacherContent panel-body">
+                    <div class="tableLimits">
+                        <table id="teacherTable">
+                            <thead>
+                            <tr>
+                                <th>First name</th>
+                                <th>Last name</th>
+                                <th>Marks</th>
+                                <th>Absences</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="tableFooter">
+                        <div class="leftDiv">
+                            <h4 class="expensesSize">Showing 1 to 50 of 150 entries</h4>
+                        </div>
+                        <div class="middleDiv">
+                        </div>
+                        <!--                        <div class="rightDiv">-->
+                        <!--                            <button class="" onclick="getExpensesPage(-1, null)" class="button">-->
+                        <!--                                <span class="material-icons">-->
+                        <!--                                                           navigate_before-->
+                        <!--                                                        </span>-->
+                        <!--                            </button>-->
+                        <!--                            <h4 class="currentPage"></h4>-->
+                        <!--                            <button class="pageIncrease" onclick="getExpensesPage(1, null)" class="button">-->
+                        <!--                                <span class="material-icons">-->
+                        <!--                                                            navigate_next-->
+                        <!--                                                        </span></button>-->
+                    </div>
+                </div>
+            </div>
+            <div class="panel" id="myClassroom">
+                <div class="panel-head">
+                    <div class="tableInfoLeft">
+                        <h2>My classroom</h2>
+                    </div>
+                </div>
+                <div class="studentContent panel-body">
+                    <div class="tableLimits">
+                        <table id="studentTable">
+                            <thead>
+                            <tr>
+                                <th>First name</th>
+                                <th>Last name</th>
+                                <th>Class</th>
+                                <th style="width: 85px">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="tableFooter">
+                        <div class="leftDiv">
+                            <h4 class="expensesSize">Showing 1 to 50 of 150 entries</h4>
+                        </div>
+                        <div class="middleDiv">
+                        </div>
+                        <div class="rightDiv">
+                            <!--                            <button id="pageDecrease" onclick="getExpensesPage(-1, null)" class="button">-->
+                            <!--                                <span class="material-icons">-->
+                            <!--                                                           navigate_before-->
+                            <!--                                                        </span>-->
+                            <!--                            </button>-->
+                            <!--                            <h4 id="currentPage"></h4>-->
+                            <!--                            <button id="pageIncrease" onclick="getExpensesPage(1, null)" class="button">-->
+                            <!--                                <span class="material-icons">-->
+                            <!--                                                            navigate_next-->
+                            <!--                                                        </span></button>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
