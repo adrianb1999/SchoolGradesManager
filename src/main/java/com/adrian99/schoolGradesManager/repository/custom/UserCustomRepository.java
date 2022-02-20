@@ -1,5 +1,6 @@
 package com.adrian99.schoolGradesManager.repository.custom;
 
+import com.adrian99.schoolGradesManager.model.Classroom;
 import com.adrian99.schoolGradesManager.model.User;
 
 import java.util.List;
@@ -9,4 +10,5 @@ public interface UserCustomRepository {
     User findByUsername(String username);
     List<Map<String, Object>> findAllTeachers();
     List<Map<String, Object>> findAllStudents();
+    List<Map<String, Object>> findStudentsByClassroom(Classroom classroom);
 }

@@ -1,9 +1,12 @@
 package com.adrian99.schoolGradesManager.service.implementation;
 
 import com.adrian99.schoolGradesManager.model.Course;
+import com.adrian99.schoolGradesManager.model.User;
 import com.adrian99.schoolGradesManager.repository.CourseRepository;
 import com.adrian99.schoolGradesManager.service.CourseService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -12,6 +15,11 @@ public class CourseServiceImpl implements CourseService {
 
     public CourseServiceImpl(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
+    }
+
+    @Override
+    public Iterable<Course> findAll() {
+        return courseRepository.findAll();
     }
 
     @Override
@@ -31,11 +39,16 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void deleteById(Long aLong) {
-
     }
 
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
+    }
 
+    //Custom queries
+
+    @Override
+    public List<Course> allCoursesByTeacher(User teacher) {
+        return courseRepository.allCoursesByTeacher(teacher);
     }
 }

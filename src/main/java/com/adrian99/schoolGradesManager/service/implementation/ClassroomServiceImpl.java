@@ -1,6 +1,7 @@
 package com.adrian99.schoolGradesManager.service.implementation;
 
 import com.adrian99.schoolGradesManager.model.Classroom;
+import com.adrian99.schoolGradesManager.model.User;
 import com.adrian99.schoolGradesManager.repository.ClassroomRepository;
 import com.adrian99.schoolGradesManager.service.ClassroomService;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,11 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     public ClassroomServiceImpl(ClassroomRepository classroomRepository) {
         this.classroomRepository = classroomRepository;
+    }
+
+    @Override
+    public Iterable<Classroom> findAll() {
+        return classroomRepository.findAll();
     }
 
     @Override
@@ -37,5 +43,12 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
 
+    }
+
+    //Custom queries
+
+    @Override
+    public Classroom findClassroomByUserId(User currentUser) {
+        return classroomRepository.findClassroomByUserId(currentUser);
     }
 }

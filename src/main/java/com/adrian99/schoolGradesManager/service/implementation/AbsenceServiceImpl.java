@@ -15,6 +15,11 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     @Override
+    public Iterable<Absence> findAll() {
+        return absenceRepository.findAll();
+    }
+
+    @Override
     public Absence findById(Long aLong) {
         return absenceRepository.findById(aLong).orElse(null);
     }

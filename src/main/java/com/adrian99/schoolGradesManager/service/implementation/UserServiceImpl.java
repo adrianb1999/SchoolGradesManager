@@ -1,5 +1,6 @@
 package com.adrian99.schoolGradesManager.service.implementation;
 
+import com.adrian99.schoolGradesManager.model.Classroom;
 import com.adrian99.schoolGradesManager.model.User;
 import com.adrian99.schoolGradesManager.repository.UserRepository;
 import com.adrian99.schoolGradesManager.service.UserService;
@@ -15,6 +16,11 @@ public class UserServiceImpl implements UserService {
 
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Override
+    public Iterable<User> findAll() {
+        return userRepository.findAll();
     }
 
     @Override
@@ -56,5 +62,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Map<String, Object>> findAllStudents() {
         return userRepository.findAllStudents();
+    }
+
+    @Override
+    public List<Map<String, Object>> findStudentsByClassroom(Classroom classroom) {
+        return userRepository.findStudentsByClassroom(classroom);
     }
 }
