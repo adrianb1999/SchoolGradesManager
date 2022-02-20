@@ -15,6 +15,11 @@ public class MarkServiceImpl implements MarkService {
     }
 
     @Override
+    public Iterable<Mark> findAll() {
+        return markRepository.findAll();
+    }
+
+    @Override
     public Mark findById(Long aLong) {
         return markRepository.findById(aLong).orElse(null);
     }

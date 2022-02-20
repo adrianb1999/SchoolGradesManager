@@ -1,6 +1,8 @@
 package com.adrian99.schoolGradesManager.service;
 
 public interface CrudService<T, ID> {
+    Iterable<T> findAll();
+
     T findById(ID id);
 
     T save(T object);
