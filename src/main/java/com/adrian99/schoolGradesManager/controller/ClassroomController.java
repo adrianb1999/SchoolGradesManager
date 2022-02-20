@@ -4,10 +4,9 @@ import com.adrian99.schoolGradesManager.model.Classroom;
 import com.adrian99.schoolGradesManager.model.User;
 import com.adrian99.schoolGradesManager.service.ClassroomService;
 import com.adrian99.schoolGradesManager.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,13 +20,34 @@ public class ClassroomController {
         this.userService = userService;
     }
 
+    @GetMapping("api/classrooms")
+    public List<Classroom> getClassrooms(){
+        return (List<Classroom>) classroomService.findAll();
+    }
+
     @PostMapping("/api/createClassroom")
     public Classroom createClassroom(@RequestBody Map<String, String> info){
 
         Classroom classroom = new Classroom();
 
-        classroom.setName(info.get("name"));
         User teacher = userService.findById(Long.parseLong(info.get("teacher_id")));
+
+        classroom.setName(info.get("name"));
+
+        classroom.setClassMaster(teacher);
+
+        return classroomService.save(classroom);
+    }
+
+    @PutMapping("/api/createClassroom/{classroomId}")
+    public Classroom updateClassroom(@RequestBody Map<String, String> info, @PathVariable Long classroomId){
+
+        Classroom classroom = classroomService.findById(classroomId);
+
+        User teacher = userService.findById(Long.parseLong(info.get("teacher_id")));
+
+        classroom.setName(info.get("name"));
+
         classroom.setClassMaster(teacher);
 
         return classroomService.save(classroom);
@@ -43,4 +63,6 @@ public class ClassroomController {
 
         return classroomService.save(classroom);
     }
+
+
 }
