@@ -1,4 +1,7 @@
 <html>
+<head>
+    <script th:src="@{/js/admin.js}"></script>
+</head>
 <body>
 <div class="page" th:fragment="admin">
     <div class="left">
@@ -9,33 +12,39 @@
             <div class="icon">
                 <span class="material-icons md-36">account_circle</span>
             </div>
-            <h3>Teachers</h3>
+            <h3>Profesori</h3>
         </div>
 
         <div class="leftButtons btn-toggle-panel" data-target="#studentsInfo">
             <div class="icon">
-                <span class="material-icons md-36">face</span>
+                <span class="material-icons md-36">school</span>
             </div>
-            <h3>Students</h3>
+            <h3>Elevi</h3>
         </div>
 
         <div class="leftButtons btn-toggle-panel" data-target="#coursesInfo">
             <div class="icon">
                 <span class="material-icons md-36">library_books</span>
             </div>
-            <h3>Courses</h3>
+            <h3>Materii</h3>
         </div>
         <div class="leftButtons btn-toggle-panel" data-target="#classroomsInfo">
             <div class="icon">
-                <span class="material-icons md-36">school</span>
+                <span class="material-icons md-36">groups</span>
             </div>
-            <h3>Classrooms</h3>
+            <h3>Clase</h3>
+        </div>
+        <div class="leftButtons btn-toggle-panel" data-target="#schoolSettings">
+            <div class="icon">
+                <span class="material-icons md-36">settings</span>
+            </div>
+            <h3>Setari scoala</h3>
         </div>
         <div class="leftButtons logout" id="logout">
             <div class="icon">
                 <span class="material-icons md-36">logout</span>
             </div>
-            <h3>Logout</h3>
+            <h3>Delogare</h3>
         </div>
     </div>
     <div class="right">
@@ -43,11 +52,11 @@
             <div class="panel active" id="teachersInfo">
                 <div class="panel-head">
                     <div class="tableInfoLeft">
-                        <h2>Teachers</h2>
+                        <h2>Profesori</h2>
                     </div>
                     <div class="tableInfoRight">
                         <button class="addButton button addTeacher" onclick="openModal('teacherModal')">
-                            Create teacher
+                            Adauga profesor
                         </button>
                     </div>
                 </div>
@@ -56,43 +65,25 @@
                         <table id="teacherTable">
                             <thead>
                             <tr>
-                                <th>First name</th>
-                                <th>Last name</th>
-                                <th>Courses</th>
-                                <th style="width: 85px">Actions</th>
+                                <th>Prenume</th>
+                                <th>Nume de familie</th>
+                                <th>Materii</th>
+                                <th style="width: 85px">Optiuni</th>
                             </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
                     </div>
-                    <div class="tableFooter">
-                        <div class="leftDiv">
-                            <h4 class="expensesSize">Showing 1 to 50 of 150 entries</h4>
-                        </div>
-                        <div class="middleDiv">
-                        </div>
-<!--                        <div class="rightDiv">-->
-<!--                            <button class="" onclick="getExpensesPage(-1, null)" class="button">-->
-<!--                                <span class="material-icons">-->
-<!--                                                           navigate_before-->
-<!--                                                        </span>-->
-<!--                            </button>-->
-<!--                            <h4 class="currentPage"></h4>-->
-<!--                            <button class="pageIncrease" onclick="getExpensesPage(1, null)" class="button">-->
-<!--                                <span class="material-icons">-->
-<!--                                                            navigate_next-->
-<!--                                                        </span></button>-->
-                        </div>
-                    </div>
                 </div>
+            </div>
             <div class="panel" id="studentsInfo">
                 <div class="panel-head">
                     <div class="tableInfoLeft">
-                        <h2>Students</h2>
+                        <h2>Elevi</h2>
                     </div>
                     <div class="tableInfoRight">
                         <button class="addButton button addStudent" onclick="openModal('studentModal')">
-                            Create student
+                            Adauga elev
                         </button>
                     </div>
                 </div>
@@ -110,35 +101,16 @@
                             <tbody></tbody>
                         </table>
                     </div>
-                    <div class="tableFooter">
-                        <div class="leftDiv">
-                            <h4 class="expensesSize">Showing 1 to 50 of 150 entries</h4>
-                        </div>
-                        <div class="middleDiv">
-                        </div>
-                        <div class="rightDiv">
-                            <!--                            <button id="pageDecrease" onclick="getExpensesPage(-1, null)" class="button">-->
-                            <!--                                <span class="material-icons">-->
-                            <!--                                                           navigate_before-->
-                            <!--                                                        </span>-->
-                            <!--                            </button>-->
-                            <!--                            <h4 id="currentPage"></h4>-->
-                            <!--                            <button id="pageIncrease" onclick="getExpensesPage(1, null)" class="button">-->
-                            <!--                                <span class="material-icons">-->
-                            <!--                                                            navigate_next-->
-                            <!--                                                        </span></button>-->
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="panel" id="coursesInfo">
                 <div class="panel-head">
                     <div class="tableInfoLeft">
-                        <h2>Courses</h2>
+                        <h2>Materii</h2>
                     </div>
                     <div class="tableInfoRight">
                         <button class="addButton button addCourse" onclick="openModal('courseModal')">
-                            Create course
+                            Adauga materie
                         </button>
                     </div>
                 </div>
@@ -147,44 +119,25 @@
                         <table id="coursesTable">
                             <thead>
                             <tr>
+                                <th>Class</th>
                                 <th>Name</th>
                                 <th>Teacher</th>
-                                <th>Class</th>
                                 <th style="width: 85px">Actions</th>
                             </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
                     </div>
-                    <div class="tableFooter">
-                        <div class="leftDiv">
-                            <h4 class="expensesSize">Showing 1 to 50 of 150 entries</h4>
-                        </div>
-                        <div class="middleDiv">
-                        </div>
-                        <div class="rightDiv">
-                            <!--                            <button id="pageDecrease" onclick="getExpensesPage(-1, null)" class="button">-->
-                            <!--                                <span class="material-icons">-->
-                            <!--                                                           navigate_before-->
-                            <!--                                                        </span>-->
-                            <!--                            </button>-->
-                            <!--                            <h4 id="currentPage"></h4>-->
-                            <!--                            <button id="pageIncrease" onclick="getExpensesPage(1, null)" class="button">-->
-                            <!--                                <span class="material-icons">-->
-                            <!--                                                            navigate_next-->
-                            <!--                                                        </span></button>-->
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="panel" id="classroomsInfo">
                 <div class="panel-head">
                     <div class="tableInfoLeft">
-                        <h2>Classrooms</h2>
+                        <h2>Clase</h2>
                     </div>
                     <div class="tableInfoRight">
                         <button class="addButton button addClassroom" onclick="openModal('classroomModal')">
-                            Create classroom
+                            Adauga clasa
                         </button>
                     </div>
                 </div>
@@ -201,24 +154,17 @@
                             <tbody></tbody>
                         </table>
                     </div>
-                    <div class="tableFooter">
-                        <div class="leftDiv">
-                            <h4 class="expensesSize">Showing 1 to 50 of 150 entries</h4>
-                        </div>
-                        <div class="middleDiv">
-                        </div>
-                        <div class="rightDiv">
-                            <!--                            <button id="pageDecrease" onclick="getExpensesPage(-1, null)" class="button">-->
-                            <!--                                <span class="material-icons">-->
-                            <!--                                                           navigate_before-->
-                            <!--                                                        </span>-->
-                            <!--                            </button>-->
-                            <!--                            <h4 id="currentPage"></h4>-->
-                            <!--                            <button id="pageIncrease" onclick="getExpensesPage(1, null)" class="button">-->
-                            <!--                                <span class="material-icons">-->
-                            <!--                                                            navigate_next-->
-                            <!--                                                        </span></button>-->
-                        </div>
+                </div>
+            </div>
+            <div class="panel" id="schoolSettings">
+                <div class="panel-head">
+                    <div class="tableInfoLeft">
+                        <h2>Setari scoala</h2>
+                    </div>
+                </div>
+                <div class="studentContent panel-body">
+                    <div class="tableLimits">
+
                     </div>
                 </div>
             </div>
@@ -283,6 +229,8 @@
             </select><br>
             <select id="courseClassroom" >
             </select><br>
+            <input type="checkbox" id="examGrade">
+            <label for="examGrade">Are teza?</label><br>
             <br>
             <button class="button" id="createCourseButton">Create</button>
         </form>
