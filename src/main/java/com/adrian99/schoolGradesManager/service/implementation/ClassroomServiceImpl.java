@@ -46,9 +46,13 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     //Custom queries
-
     @Override
     public Classroom findClassroomByUserId(User currentUser) {
         return classroomRepository.findClassroomByUserId(currentUser);
+    }
+
+    @Override
+    public Classroom findClassroomByClassmasterId(User classmaster) {
+        return classroomRepository.findClassroomByClassmasterId(classmaster);
     }
 }

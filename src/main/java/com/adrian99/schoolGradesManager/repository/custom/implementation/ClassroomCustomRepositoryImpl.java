@@ -2,7 +2,6 @@ package com.adrian99.schoolGradesManager.repository.custom.implementation;
 
 import com.adrian99.schoolGradesManager.model.Classroom;
 import com.adrian99.schoolGradesManager.model.QClassroom;
-import com.adrian99.schoolGradesManager.model.QUser;
 import com.adrian99.schoolGradesManager.model.User;
 import com.adrian99.schoolGradesManager.repository.custom.ClassroomCustomRepository;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -33,4 +32,15 @@ public class ClassroomCustomRepositoryImpl implements ClassroomCustomRepository 
                 .fetchFirst();
     }
 
+    @Override
+    public Classroom findClassroomByClassmasterId(User classmaster) {
+
+        JPAQuery<Classroom> query = new JPAQuery<>(entityManager);
+        QClassroom qClassroom = QClassroom.classroom;
+
+        return query.select(qClassroom)
+                .from(qClassroom)
+                .where(qClassroom.classMaster.eq(classmaster))
+                .fetchFirst();
+    }
 }

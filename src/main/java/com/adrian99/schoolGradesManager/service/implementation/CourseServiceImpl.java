@@ -7,6 +7,7 @@ import com.adrian99.schoolGradesManager.service.CourseService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -50,5 +51,10 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<Course> allCoursesByTeacher(User teacher) {
         return courseRepository.allCoursesByTeacher(teacher);
+    }
+
+    @Override
+    public List<Map<String, Object>> allCoursesByStudent(User student) {
+        return courseRepository.allCoursesByStudent(student);
     }
 }
