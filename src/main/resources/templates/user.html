@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
 </head>
 <body class="user">
+<div class="total">
     <th:block th:switch="${userType}">
         <th:block th:case="ROLE_ADMIN">
             <div th:replace="fragments/admin.html"></div>
@@ -24,6 +25,7 @@
             <div th:replace="fragments/teacher.html"></div>
         </th:block>
     </th:block>
+</div>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

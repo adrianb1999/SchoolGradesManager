@@ -6,8 +6,9 @@ body, html {
 body{
     font-family: Roboto, serif;
     height: 100vh;
-    background: linear-gradient(45deg, #1d2525, #5a62aa);
-    display: flex;
+    /*background: linear-gradient(45deg, #fffefe, #0de1bc);*/
+    background-color: black;
+    /*display: flex;*/
 }
 .total{
     width: 100vw;
@@ -49,7 +50,6 @@ body{
 }
 
 input, select {
-    width: 75%;
     padding: 8px 5px 9px;
     margin-top: 5px;
     margin-bottom: 5px;
@@ -81,9 +81,9 @@ label{
     height: 90vh;
     display: flex;
     margin: auto;
-    background-color: #1d1b27;
+    background-color: #2c3e50;
     border-radius: 15px;
-    box-shadow: 0 0 5px 0 #1d1b27;
+    box-shadow: 0 0 5px 0 #2c3e50;
 }
 
 .left{
@@ -144,11 +144,30 @@ label{
 }
 
 .logout {
-    margin-top: 280px;
+    margin-top: 220px;
 }
 
 .logout:hover {
-    margin: 280px 0 0 5px;
+    margin: 220px 0 0 5px;
+    background-color: #f53b57;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.logout-teacher{
+    margin-top: 375px;
+}
+.logout-teacher:hover {
+    margin: 375px 0 0 5px;
+    background-color: #f53b57;
+    cursor: pointer;
+    font-weight: bold;
+}
+.logout-student{
+    margin-top: 420px;
+}
+.logout-student:hover {
+    margin: 420px 0 0 5px;
     background-color: #f53b57;
     cursor: pointer;
     font-weight: bold;
@@ -172,7 +191,7 @@ label{
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     padding: 0;
-    height: 13vh;
+    height: 70px;
     background-color: white;
     display: flex;
 }
@@ -180,10 +199,10 @@ label{
 .panel-head h2 {
     margin: 0;
     padding-left: 25px;
-    color: #5955b3;
+    color: #2c3e50;
     text-align: left;
     padding-bottom: 10px;
-    padding-top: 18px;
+    padding-top: 25px;
 }
 
 table {
@@ -194,95 +213,49 @@ table {
     border-collapse: collapse;
 }
 
-table tr {
-    border-bottom: 1px solid #2f3542;
-}
-
-table tbody tr:hover {
-    color: white;
-    font-weight: bold;
-    background-color: #706fd3;
-}
+/*table tbody tr:hover {*/
+/*    color: white;*/
+/*    font-weight: bold;*/
+/*    background-color: rgba(66, 120, 232, 0.78);*/
+/*}*/
 
 table td {
     text-align: center;
     height: 40px;
 }
 
-table thead th {
+table thead {
+    border-radius: 10px;
     height: 50px;
-    margin: auto;
     color: white;
     font-size: 17px;
-    background-color: #706fd3;
+    background-color: #2c3e50;
     position: sticky;
     top: 0;
     z-index: 1;
-    cursor: pointer;
 }
+
+table thead th{
+    margin: auto;
+}
+
+
+/*tbody tr:nth-child(6n+1) {*/
+/*    background-color: rgba(44, 62, 80, 0.1);*/
+/*}*/
+/*tbody tr:nth-child(6n+2) {*/
+/*    background-color: rgba(44, 62, 80, 0.1);*/
+/*}*/
+/*tbody tr:nth-child(6n+3) {*/
+/*    background-color: rgba(44, 62, 80, 0.1);*/
+/*}*/
 
 .tableLimits {
     margin: auto;
     overflow-y: auto;
-    height: 491px;
-}
+    height: 555px;
 
-.tableFooter {
-    margin: 0;
-    padding: 0;
     display: flex;
-}
-
-.tableFooter .leftDiv {
-    margin: 0 auto auto 5px;
-    padding: 0;
-    height: 30px;
-}
-
-.tableFooter h4 {
-    text-align: center;
-    margin: 0;
-    padding: 19px 0;
-    font-size: 14px;
-}
-
-.tableFooter .middleDiv {
-    padding: 0;
-    width: 25vw;
-    height: 7vh;
-}
-
-.tableFooter .rightDiv {
-    padding: 0;
-    width: 15vw;
-    height: 7vh;
-    display: flex;
-}
-
-.tableFooter .rightDiv h4 {
-    padding: 0;
-    margin: 0;
-    height: 20px;
-    width: 30px;
-    line-height: 7vh;
-}
-
-.pageDecrease, #pageIncrease {
-    height: 30px;
-    width: 30px;
-    padding: 0;
-    margin-top: auto;
-    margin-bottom: auto;
-}
-
-.pageDecrease {
-    margin-left: auto;
-    margin-right: 5px;
-}
-
-.pageIncrease {
-    margin-right: 20px;
-    margin-left: 5px;
 }
 
 .panel {
@@ -349,12 +322,12 @@ table thead th {
 }
 .tableInfoRight {
     display: flex;
-    width: 100%;
+    margin: auto 25px auto auto;
 }
 
 .addButton {
-    margin: auto 20px 10px auto;
-    background-color: #2ecc71;
+    border-radius: 7px;
+    background-color: #55efc4;
 }
 
 ::-webkit-scrollbar {
@@ -382,7 +355,34 @@ table thead th {
 .deleteButton {
     color: #e74c3c;
 }
+
 button:hover {
     background-color: #5e2c82;
     box-shadow: 0 0 5px 0 #5e2c82;
+}
+
+#teacherClassroomsList{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#absencesTable{
+    margin-left: 5px;
+}
+
+table{
+    margin-bottom: auto;
+}
+
+#marksTable, #absencesTable{
+    margin-bottom: auto;
+}
+
+span.tag {
+    display: inline-block;
+    padding: 3px 6px;
+    font-size: 13px;
+    border: 1px solid #2c3e50;
+    border-radius: 6px;
+    margin: 2px;
 }
