@@ -9,7 +9,6 @@ import com.adrian99.schoolGradesManager.service.CourseService;
 import com.adrian99.schoolGradesManager.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.sql.rowset.Predicate;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -27,21 +26,35 @@ public class CourseController {
         this.userService = userService;
     }
 
-    @GetMapping("api/allCourses")
+    @GetMapping("/api/admin/allCourses")
     public List<Course> allCourses(){
         return (List<Course>) courseService.findAll();
     }
 
-    @GetMapping("api/courses")
+    @GetMapping("/api/teacher/courses")
     public List<Course> allCourse(Principal principal){
         User teacher = userService.findByUsername(principal.getName());
+
         if(!teacher.getRoles().contains("ROLE_TEACHER"))
             throw new ApiRequestException("User is not a teacher!");
 
         return courseService.allCoursesByTeacher(teacher);
     }
 
-    @PostMapping("/api/courses")
+    @GetMapping("/api/student/courses")
+    public List<Map<String, Object>> allCoursesByStudent(Principal principal){
+        User student = userService.findByUsername(principal.getName());
+
+        if(student == null)
+            throw new ApiRequestException("Something went wrong!");
+
+        if(!student.getRoles().contains("ROLE_STUDENT"))
+            throw new ApiRequestException("User is not student!");
+
+        return courseService.allCoursesByStudent(student);
+    }
+
+    @PostMapping("/api/admin/createCourse")
     public Course createCourse(@RequestBody Map<String, String> info){
         Course course = new Course();
         Classroom classroom = classroomService.findById(Long.parseLong(info.get("classroom_id")));
@@ -50,10 +63,12 @@ public class CourseController {
         course.setTeacher(teacher);
         course.setClassRoom(classroom);
         course.setName(info.get("name"));
+        course.setExam(Boolean.valueOf(info.get("exam")));
 
         return courseService.save(course);
     }
-    @PutMapping("/api/courses/{courseId}")
+
+    @PutMapping("/api/admin/editCourses/{courseId}")
     public Course updateCourse(@RequestBody Map<String, String> info, @PathVariable Long courseId){
 
         Course course = courseService.findById(courseId);

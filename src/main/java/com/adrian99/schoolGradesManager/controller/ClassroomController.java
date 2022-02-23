@@ -20,12 +20,12 @@ public class ClassroomController {
         this.userService = userService;
     }
 
-    @GetMapping("api/classrooms")
+    @GetMapping("/api/admin/allClassrooms")
     public List<Classroom> getClassrooms(){
         return (List<Classroom>) classroomService.findAll();
     }
 
-    @PostMapping("/api/createClassroom")
+    @PostMapping("/api/admin/createClassroom")
     public Classroom createClassroom(@RequestBody Map<String, String> info){
 
         Classroom classroom = new Classroom();
@@ -39,7 +39,7 @@ public class ClassroomController {
         return classroomService.save(classroom);
     }
 
-    @PutMapping("/api/createClassroom/{classroomId}")
+    @PutMapping("/api/admin/editClassroom/{classroomId}")
     public Classroom updateClassroom(@RequestBody Map<String, String> info, @PathVariable Long classroomId){
 
         Classroom classroom = classroomService.findById(classroomId);
@@ -52,17 +52,4 @@ public class ClassroomController {
 
         return classroomService.save(classroom);
     }
-
-    @PostMapping("/api/addStudentToClassroom")
-    public Classroom addStudent(@RequestBody Map<String, String> info) {
-
-        Classroom classroom = classroomService.findById(Long.parseLong(info.get("classroom_id")));
-        User student = userService.findById(Long.parseLong(info.get("student_id")));
-
-        classroom.getStudents().add(student);
-
-        return classroomService.save(classroom);
-    }
-
-
 }
