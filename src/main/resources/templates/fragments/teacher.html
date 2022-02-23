@@ -1,25 +1,28 @@
 <html>
+<head>
+    <script th:src="@{/js/teacher.js}"></script>
+</head>
 <body>
 <div class="page" th:fragment="admin">
     <div class="left">
         <div class="logo">
             <h2>School Grades Manager by adrian99</h2>
         </div>
-        <div class="leftButtons btn-toggle-panel" data-target="#teachersInfo">
+        <div class="leftButtons btn-toggle-panel" data-target="#myCourses">
             <div class="icon">
                 <span class="material-icons md-36">account_circle</span>
             </div>
-            <h3>My courses</h3>
+            <h3>Materiile mele</h3>
         </div>
 
-        <div class="leftButtons btn-toggle-panel" data-target="#studentsInfo">
+        <div class="leftButtons btn-toggle-panel" data-target="#myClassroom">
             <div class="icon">
                 <span class="material-icons md-36">face</span>
             </div>
-            <h3>My classroom</h3>
+            <h3>Clasa mea</h3>
         </div>
 
-        <div class="leftButtons logout" id="logout">
+        <div class="leftButtons logout-teacher" id="logout">
             <div class="icon">
                 <span class="material-icons md-36">logout</span>
             </div>
@@ -31,7 +34,7 @@
             <div class="panel active" id="myCourses">
                 <div class="panel-head">
                     <div class="tableInfoLeft">
-                        <h2>My courses</h2>
+                        <h2>Materiile mele</h2>
                     </div>
                     <div class="tableInfoRight">
                        <select id="teacherClassroomsList" onchange="teacherLoadStudent()">Select course</select>
@@ -42,78 +45,84 @@
                         <table id="teacherTable">
                             <thead>
                             <tr>
-                                <th>First name</th>
-                                <th>Last name</th>
-                                <th>Marks</th>
-                                <th>Absences</th>
+                                <th rowspan="2">Nume</th>
+                                <th colspan="2">Note</th>
+                                <th colspan="2">Absente</th>
+                                <th rowspan="2">Optiuni</th>
+                            </tr>
+                            <tr>
+                                <th>Sem. 1</th>
+                                <th>Sem. 2</th>
+                                <th>Sem. 1</th>
+                                <th>Sem. 2</th>
                             </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
-                    </div>
-                    <div class="tableFooter">
-                        <div class="leftDiv">
-                            <h4 class="expensesSize">Showing 1 to 50 of 150 entries</h4>
-                        </div>
-                        <div class="middleDiv">
-                        </div>
-                        <!--                        <div class="rightDiv">-->
-                        <!--                            <button class="" onclick="getExpensesPage(-1, null)" class="button">-->
-                        <!--                                <span class="material-icons">-->
-                        <!--                                                           navigate_before-->
-                        <!--                                                        </span>-->
-                        <!--                            </button>-->
-                        <!--                            <h4 class="currentPage"></h4>-->
-                        <!--                            <button class="pageIncrease" onclick="getExpensesPage(1, null)" class="button">-->
-                        <!--                                <span class="material-icons">-->
-                        <!--                                                            navigate_next-->
-                        <!--                                                        </span></button>-->
                     </div>
                 </div>
             </div>
             <div class="panel" id="myClassroom">
                 <div class="panel-head">
                     <div class="tableInfoLeft">
-                        <h2>My classroom</h2>
+                        <h2>Clasa mea</h2>
+                    </div>
+                    <div class="tableInfoRight">
+                        <select id="teacherOwnClassroomsList" onchange="teacherLoadClassroom()">Select course</select>
                     </div>
                 </div>
                 <div class="studentContent panel-body">
                     <div class="tableLimits">
-                        <table id="studentTable">
+                        <table id="myClassroomTable">
                             <thead>
-                            <tr>
-                                <th>First name</th>
-                                <th>Last name</th>
-                                <th>Class</th>
-                                <th style="width: 85px">Actions</th>
-                            </tr>
+                                <tr>
+                                    <th rowspan="2">Materie</th>
+                                    <th colspan="2">Note</th>
+                                    <th colspan="2">Absente</th>
+                                </tr>
+                                <tr>
+                                    <th>Sem. 1</th>
+                                    <th>Sem. 2</th>
+                                    <th>Sem. 1</th>
+                                    <th>Sem. 2</th>
+                                </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
-                    </div>
-                    <div class="tableFooter">
-                        <div class="leftDiv">
-                            <h4 class="expensesSize">Showing 1 to 50 of 150 entries</h4>
-                        </div>
-                        <div class="middleDiv">
-                        </div>
-                        <div class="rightDiv">
-                            <!--                            <button id="pageDecrease" onclick="getExpensesPage(-1, null)" class="button">-->
-                            <!--                                <span class="material-icons">-->
-                            <!--                                                           navigate_before-->
-                            <!--                                                        </span>-->
-                            <!--                            </button>-->
-                            <!--                            <h4 id="currentPage"></h4>-->
-                            <!--                            <button id="pageIncrease" onclick="getExpensesPage(1, null)" class="button">-->
-                            <!--                                <span class="material-icons">-->
-                            <!--                                                            navigate_next-->
-                            <!--                                                        </span></button>-->
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<div id="createMarkModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form action="#" autocomplete="off" id="createMarkForm">
+            <h3 id="createMarkFormTitle">Add mark</h3>
+            <input type="number" id="markValue" placeholder="Mark value.."><br>
+            <input type="Date" id="markDate" placeholder="Date..."><br>
+            <input type="checkbox" id="examGrade">
+            <label for="examGrade">Nota teza?</label><br>
+            <br>
+            <br>
+            <button class="button" id="createMarkButton">Create</button>
+        </form>
+    </div>
+</div>
+
+<div id="createAbsenceModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form action="#" autocomplete="off" id="createAbsenceForm">
+            <h3 id="createAbsenceFormTitle">Add absence</h3>
+            <input type="Date" id="absenceDate" placeholder="Date..."><br>
+            <br>
+            <button class="button" id="createAbsenceButton">Create</button>
+        </form>
+    </div>
+</div>
+
 </body>
 </html>
