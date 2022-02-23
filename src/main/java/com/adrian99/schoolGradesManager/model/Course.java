@@ -17,13 +17,16 @@ public class Course {
 
     private String name;
 
+    private Boolean exam;
+
     public Course() {
     }
 
-    public Course(Classroom classRoom, User teacher, String name) {
+    public Course(Classroom classRoom, User teacher, String name, Boolean exam) {
         this.classRoom = classRoom;
         this.teacher = teacher;
         this.name = name;
+        this.exam = exam;
     }
 
     public Long getId() {
@@ -56,5 +59,13 @@ public class Course {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getExam() {
+        return exam;
+    }
+
+    public void setExam(Boolean exam) {
+        this.exam = exam;
     }
 }

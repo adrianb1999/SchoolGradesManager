@@ -18,17 +18,18 @@ public class Mark {
 
     private Integer value;
     private LocalDate date;
-    private String type;
+
+    private Boolean examMark;
 
     public Mark() {
     }
 
-    public Mark(User student, Course course, Integer value, LocalDate date, String type) {
+    public Mark(User student, Course course, Integer value, LocalDate date, Boolean examMark) {
         this.student = student;
         this.course = course;
         this.value = value;
         this.date = date;
-        this.type = type;
+        this.examMark = examMark;
     }
 
     public Long getId() {
@@ -71,11 +72,11 @@ public class Mark {
         this.date = date;
     }
 
-    public String getType() {
-        return type;
+    public Boolean getExamMark() {
+        return examMark;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setExamMark(Boolean examMark) {
+        this.examMark = examMark;
     }
 }
