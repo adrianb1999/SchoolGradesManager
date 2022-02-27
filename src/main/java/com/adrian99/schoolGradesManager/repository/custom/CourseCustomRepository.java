@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface CourseCustomRepository {
-    List<Course> allCoursesByTeacher(User teacher);
+    List<Map<String, Object>> allCoursesByTeacher(User teacher);
     List<Map<String, Object>> allCoursesByStudent(User student);
+    List<Map<String, Object>> findAllCourses();
 }

@@ -10,6 +10,7 @@ import com.adrian99.schoolGradesManager.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class MarkController {
         return userService.findMarksByStudentAndCourse(student, course);
     }
 
-    @GetMapping("/api/student/marksById/{studentId}")
+    @GetMapping("/api/teacher/marksById/{studentId}")
     public List<Map<String, Object>> getAllMarksOfStudent(@PathVariable Long studentId){
         User student = userService.findById(studentId);
 
@@ -52,12 +53,31 @@ public class MarkController {
         return userService.findMarksByStudent(student);
     }
 
+    @GetMapping("/api/student/marksByStudent")
+    public List<Map<String, Object>> getAllMarksOfStudent(Principal principal){
+        User student = userService.findByUsername(principal.getName());
+
+        if(!student.getRoles().contains("ROLE_STUDENT"))
+            throw new ApiRequestException("The user is not a student!");
+
+
+        return userService.findMarksByStudent(student);
+    }
+
+
     @PostMapping("/api/teacher/createMark")
     public Mark createMark(@RequestBody Map<String, String> info){
 
         Mark mark = new Mark();
         User student = userService.findById(Long.parseLong(info.get("student_id")));
         Course course = courseService.findById(Long.parseLong(info.get("course_id")));
+
+        DayOfWeek dayOfWeek = DayOfWeek.from(LocalDate.parse(info.get("date")));
+        if(dayOfWeek.equals(DayOfWeek.SUNDAY) || dayOfWeek.equals(DayOfWeek.SATURDAY))
+            throw new ApiRequestException("Nu se pot adauga note in weekend!");
+
+        if(markService.checkIfExamMarkExist(LocalDate.parse(info.get("date")), course, student))
+            throw new ApiRequestException("Deja exista o teza in acest semestru!");
 
         mark.setStudent(student);
         mark.setCourse(course);

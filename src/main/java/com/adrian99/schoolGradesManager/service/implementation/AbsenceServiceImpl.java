@@ -1,9 +1,13 @@
 package com.adrian99.schoolGradesManager.service.implementation;
 
 import com.adrian99.schoolGradesManager.model.Absence;
+import com.adrian99.schoolGradesManager.model.Course;
+import com.adrian99.schoolGradesManager.model.User;
 import com.adrian99.schoolGradesManager.repository.AbsenceRepository;
 import com.adrian99.schoolGradesManager.service.AbsenceService;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 public class AbsenceServiceImpl implements AbsenceService {
@@ -42,5 +46,13 @@ public class AbsenceServiceImpl implements AbsenceService {
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
         absenceRepository.deleteAllById(longs);
+    }
+
+    //Custom repository
+
+
+    @Override
+    public boolean checkIfAbsenceExists(LocalDate date, Course course, User student) {
+        return absenceRepository.checkIfAbsenceExists(date, course, student);
     }
 }

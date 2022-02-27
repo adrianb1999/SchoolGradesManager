@@ -49,12 +49,17 @@ public class CourseServiceImpl implements CourseService {
     //Custom queries
 
     @Override
-    public List<Course> allCoursesByTeacher(User teacher) {
+    public List<Map<String, Object>> allCoursesByTeacher(User teacher) {
         return courseRepository.allCoursesByTeacher(teacher);
     }
 
     @Override
     public List<Map<String, Object>> allCoursesByStudent(User student) {
         return courseRepository.allCoursesByStudent(student);
+    }
+
+    @Override
+    public List<Map<String, Object>> findAllCourses() {
+        return courseRepository.findAllCourses();
     }
 }

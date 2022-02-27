@@ -6,6 +6,9 @@ import com.adrian99.schoolGradesManager.repository.ClassroomRepository;
 import com.adrian99.schoolGradesManager.service.ClassroomService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class ClassroomServiceImpl implements ClassroomService {
 
@@ -54,5 +57,10 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     public Classroom findClassroomByClassmasterId(User classmaster) {
         return classroomRepository.findClassroomByClassmasterId(classmaster);
+    }
+
+    @Override
+    public List<Map<String, Object>> findAllClassrooms() {
+        return classroomRepository.findAllClassrooms();
     }
 }

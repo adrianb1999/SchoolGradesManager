@@ -21,8 +21,8 @@ public class ClassroomController {
     }
 
     @GetMapping("/api/admin/allClassrooms")
-    public List<Classroom> getClassrooms(){
-        return (List<Classroom>) classroomService.findAll();
+    public List<Map<String, Object>> getClassrooms(){
+        return classroomService.findAllClassrooms();
     }
 
     @PostMapping("/api/admin/createClassroom")

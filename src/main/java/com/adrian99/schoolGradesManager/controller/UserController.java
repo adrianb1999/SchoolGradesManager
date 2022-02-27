@@ -1,5 +1,6 @@
 package com.adrian99.schoolGradesManager.controller;
 
+import com.adrian99.schoolGradesManager.email.EmailSender;
 import com.adrian99.schoolGradesManager.exception.ApiRequestException;
 import com.adrian99.schoolGradesManager.model.Classroom;
 import com.adrian99.schoolGradesManager.model.Course;
@@ -7,23 +8,31 @@ import com.adrian99.schoolGradesManager.model.User;
 import com.adrian99.schoolGradesManager.service.ClassroomService;
 import com.adrian99.schoolGradesManager.service.CourseService;
 import com.adrian99.schoolGradesManager.service.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 public class UserController {
 
+    private final PasswordEncoder passwordEncoder;
+
     private final ClassroomService classroomService;
     private final UserService userService;
     private final CourseService courseService;
+    private final EmailSender emailSender;
 
-    public UserController(ClassroomService classroomService, UserService userService, CourseService courseService) {
+    public UserController(PasswordEncoder passwordEncoder, ClassroomService classroomService, UserService userService, CourseService courseService, EmailSender emailSender) {
+        this.passwordEncoder = passwordEncoder;
         this.classroomService = classroomService;
         this.userService = userService;
         this.courseService = courseService;
+        this.emailSender = emailSender;
     }
 
     @GetMapping("/api/admin/allTeachers")
@@ -37,24 +46,48 @@ public class UserController {
     }
 
     @PostMapping("/api/admin/createTeacher")
-    public User createTeacher(@RequestBody Map<String, String> info, Principal principal){
+    public User createTeacher(@RequestBody Map<String, String> info) throws MessagingException {
 
         User user = new User();
+        String password = userService.passwordGenerator(20);
 
         user.setActive(true);
         user.setEmail(info.get("email"));
         user.setUsername(info.get("username"));
-        user.setPassword("pass");
+        user.setPassword(passwordEncoder.encode(password));
         user.setFirstName(info.get("firstName"));
         user.setLastName(info.get("lastName"));
         user.setRoles("ROLE_TEACHER");
+
+        emailSender.sendPasswordEmail(user.getEmail(), user.getUsername(), user.getPassword());
 
         return userService.save(user);
     }
 
     @PostMapping("/api/admin/createTeachers")
-    public List<User> createTeachers(@RequestBody List<User> teachers){
-        return (List<User>) userService.saveAll(teachers);
+    public List<User> createTeachers(@RequestBody List<Map<String,String>> teachers) throws MessagingException {
+
+        String password;
+
+        for(Map<String,String> teacher : teachers) {
+            User user = new User();
+
+            password = userService.passwordGenerator(20);
+
+            user.setActive(true);
+            user.setEmail(teacher.get("email"));
+            user.setUsername(teacher.get("username"));
+            user.setPassword(passwordEncoder.encode(password));
+            user.setFirstName(teacher.get("firstName"));
+            user.setLastName(teacher.get("lastName"));
+            user.setRoles("ROLE_TEACHER");
+
+            User createdUser = userService.save(user);
+
+            emailSender.sendPasswordEmail(user.getEmail(), user.getUsername(), user.getPassword());
+        }
+
+        return null;
     }
 
     @PutMapping("/api/admin/editTeacher/{teacherId}")
@@ -71,19 +104,23 @@ public class UserController {
     }
 
     @PostMapping("/api/admin/createStudent")
-    public User createStudent(@RequestBody Map<String, String> info){
+    public User createStudent(@RequestBody Map<String, String> info) throws MessagingException {
 
         User user = new User();
+
+        String password = userService.passwordGenerator(20);
 
         user.setActive(true);
         user.setEmail(info.get("email"));
         user.setUsername(info.get("username"));
-        user.setPassword("pass");
+        user.setPassword(passwordEncoder.encode(password));
         user.setFirstName(info.get("firstName"));
         user.setLastName(info.get("lastName"));
         user.setRoles("ROLE_STUDENT");
 
         User createdUser = userService.save(user);
+
+        emailSender.sendPasswordEmail(user.getEmail(), user.getUsername(), user.getPassword());
 
         Classroom classroom = classroomService.findById(Long.parseLong(info.get("classroom_id")));
         classroom.getStudents().add(createdUser);
@@ -93,23 +130,28 @@ public class UserController {
     }
 
     @PostMapping("api/admin/createStudents")
-    public User createStudents(@RequestBody List<Map<String, String>> infos){
+    public User createStudents(@RequestBody List<Map<String, String>> students) throws MessagingException {
 
+        String password;
 
-        for(Map<String,String> info : infos) {
+        for(Map<String,String> student : students) {
             User user = new User();
 
+            password = userService.passwordGenerator(20);
+
             user.setActive(true);
-            user.setEmail(info.get("email"));
-            user.setUsername(info.get("username"));
-            user.setPassword("pass");
-            user.setFirstName(info.get("firstName"));
-            user.setLastName(info.get("lastName"));
+            user.setEmail(student.get("email"));
+            user.setUsername(student.get("username"));
+            user.setPassword(passwordEncoder.encode(password));
+            user.setFirstName(student.get("firstName"));
+            user.setLastName(student.get("lastName"));
             user.setRoles("ROLE_STUDENT");
 
             User createdUser = userService.save(user);
 
-            Classroom classroom = classroomService.findById(Long.parseLong(info.get("classroom_id")));
+            emailSender.sendPasswordEmail(user.getEmail(), user.getUsername(), user.getPassword());
+
+            Classroom classroom = classroomService.findById(Long.parseLong(student.get("classroom_id")));
             classroom.getStudents().add(createdUser);
             classroomService.save(classroom);
         }
@@ -176,5 +218,44 @@ public class UserController {
                 true
         );
         userService.save(admin);
+    }
+
+    @PutMapping("/api/users/updateInfo")
+    public User saveOrUpdate(@RequestBody Map<String, String> userInfo, Principal principal) {
+
+        if(userInfo.get("password") == null)
+            throw new ApiRequestException("Password is required!");
+
+        User updateUser = userService.findByUsername(principal.getName());
+
+        if(!passwordEncoder.matches(userInfo.get("password"), updateUser.getPassword()))
+            throw new ApiRequestException("Password incorrect");
+
+        if(!userService.isEmailValid(userInfo.get("email")))
+            throw new ApiRequestException("Email is invalid");
+
+        if (userInfo.get("email") != null) {
+            if (userInfo.get("email").isEmpty())
+                throw new ApiRequestException("Email cannot be null!");
+
+            if (Objects.equals(updateUser.getEmail(), userInfo.get("email"))) {
+                throw new ApiRequestException("The email cannot be the same!");
+            }
+
+            if (userService.findByEmail(userInfo.get("email")) != null)
+                throw new ApiRequestException("Email already used!");
+
+            updateUser.setEmail(userInfo.get("email"));
+        }
+
+        if (userInfo.get("newPassword") != null) {
+            if (userInfo.get("newPassword").isEmpty())
+                throw new ApiRequestException("Password cannot be empty");
+            if(Objects.equals(updateUser.getPassword(), userInfo.get("newPassword")))
+                throw new ApiRequestException("The password cannot be the same!");
+
+            updateUser.setPassword(passwordEncoder.encode(userInfo.get("newPassword")));
+        }
+        return userService.save(updateUser);
     }
 }

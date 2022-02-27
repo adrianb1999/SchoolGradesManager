@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -88,5 +89,33 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Map<String, Object>> findMarksByStudent(User student) {
         return userRepository.findMarksByStudent(student);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public String passwordGenerator(int length) {
+        StringBuilder password = new StringBuilder();
+        Random random = new Random();
+
+        for(int i = 0; i < length; i++){
+            char c = (char) (random.nextInt(26) + 65);
+            boolean lower = random.nextBoolean();
+
+            if(lower)
+                c = (char) (c + 32);
+
+            password.append(c);
+        }
+
+        return password.toString();
+    }
+
+    @Override
+    public boolean isEmailValid(String email) {
+        return email.matches("^(.+)@(\\S+)$");
     }
 }

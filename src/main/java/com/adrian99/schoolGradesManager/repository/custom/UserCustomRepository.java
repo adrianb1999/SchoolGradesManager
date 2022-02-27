@@ -16,4 +16,6 @@ public interface UserCustomRepository {
     List<Map<String, Object>> findMarksByStudentAndCourse(User student, Course course);
     List<Map<String, Object>> findAbsencesByStudentAndCourse(User student, Course course);
     List<Map<String, Object>> findMarksByStudent(User student);
+
+    User findByEmail(String email);
 }

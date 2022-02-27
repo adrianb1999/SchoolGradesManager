@@ -52,44 +52,49 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                         .where(qUser.roles.contains("ROLE_TEACHER"))
                         .leftJoin(qCourse).on(qCourse.teacher.id.eq(qUser.id))
                         .leftJoin(qClassroom).on(qClassroom.eq(qCourse.classRoom))
-                        //    .leftJoin(qClassroom).on(qClassroom.classMaster.id.eq(qUser.id))
                         .fetch();
 
         List<Map<String, Object>> teacherList = new ArrayList<>();
 
-        for (int i = 0; i < teachers.size(); i++) {
-            Long id = teachers.get(i).get(0, Long.class);
-            String username = teachers.get(i).get(1, String.class);
-            String email = teachers.get(i).get(2, String.class);
-            String firstName = teachers.get(i).get(3, String.class);
-            String lastName = teachers.get(i).get(4, String.class);
-            String courseName = teachers.get(i).get(5, String.class);
-            String courseClassName = teachers.get(i).get(6, String.class);
+        Set<Long> teacherSet = teachers.stream().map(tuple -> tuple.get(0,Long.class)).collect(Collectors.toSet());
+
+        for(Long id : teacherSet){
+            String username = "";
+            String email = "";
+            String firstName = "";
+            String lastName = "";
+            String courseName;
+            String courseClassName;
 
             List<String> courseList = new ArrayList<>();
-            courseList.add(courseName + " " + courseClassName);
 
-            while (i + 1 < teachers.size()) {
-                i++;
-                if (Objects.equals(teachers.get(i).get(0, String.class), id)) {
-                    courseList.add(teachers.get(i).get(5, String.class) + " " + teachers.get(i).get(6, String.class));
-                } else {
-                    i--;
-                    break;
+            for(var teacher : teachers){
+                if(teacher.get(0,Long.class) == id){
+                    username = teacher.get(1, String.class);
+                    email = teacher.get(2, String.class);
+                    firstName = teacher.get(3, String.class);
+                    lastName = teacher.get(4, String.class);
+                    courseName = teacher.get(5, String.class);
+                    courseClassName = teacher.get(6, String.class);
+
+                    if(courseName != null)
+                        courseList.add(courseName + " " + courseClassName);
+                    else
+                        courseList.add("Nu preda nicio materie!");
                 }
             }
 
             teacherList.add(Map.of(
                     "id", id,
-                    "username", "" + username,
-                    "firstName", "" + firstName,
-                    "lastName", "" + lastName,
+                    "username", username,
+                    "firstName", firstName,
+                    "lastName", lastName,
                     "courses", courseList,
-                    "email", "" + email
+                    "email", email
             ));
         }
 
-        return teacherList;
+       return teacherList;
     }
 
     @Override
@@ -125,20 +130,18 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
         JPAQuery<User> query = new JPAQuery<>(entityManager);
 
-        System.out.println("Materia" + course.getName() + course.getClassRoom().getName() + "are teza cumva?? " + course.getExam());
-
         QUser qUser = QUser.user;
         QAbsence qAbsence = QAbsence.absence;
         QMark qMark = QMark.mark;
         QCourse qCourse = QCourse.course;
         QSchool qSchool = QSchool.school;
 
-        List<Tuple> tuples = query.select(qUser.id, qUser.firstName, qUser.lastName)
+        List<Tuple> studentTuples = query.select(qUser.id, qUser.firstName, qUser.lastName)
                 .from(qUser, qCourse)
                 .where(qUser.roles.contains("ROLE_STUDENT").and(qCourse.classRoom.students.contains(qUser).and(qCourse.eq(course))))
                 .fetch();
 
-        List<Tuple> tupleList = query.select(qMark.value, qMark.date, qUser.id, qMark.examMark)
+        List<Tuple> markSem1Tuples = query.select(qMark.value, qMark.date, qUser.id, qMark.examMark)
                 .from(qMark, qSchool)
                 .leftJoin(qUser).on(qMark.student.eq(qUser))
                 .where(qMark.student.eq(qUser),
@@ -149,7 +152,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
         JPAQuery<User> query2 = new JPAQuery<>(entityManager);
 
-        List<Tuple> tupleList4 = query2.select(qMark.value, qMark.date, qUser.id, qMark.examMark)
+        List<Tuple> markSem2Tuples = query2.select(qMark.value, qMark.date, qUser.id, qMark.examMark)
                 .from(qMark, qSchool)
                 .leftJoin(qUser).on(qMark.student.eq(qUser))
                 .where(qMark.student.eq(qUser),
@@ -160,26 +163,41 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
         JPAQuery<User> query3 = new JPAQuery<>(entityManager);
 
-        List<Tuple> tupleList2 = query3.select(qAbsence.date, qAbsence.justified, qUser.id)
-                .from(qAbsence)
+        List<Tuple> absencesSem1Tuples = query3.select(qAbsence.date, qAbsence.justified, qUser.id, qAbsence.id)
+                .from(qAbsence, qSchool)
                 .leftJoin(qUser).on(qAbsence.student.eq(qUser))
                 .where(qUser.roles.contains("ROLE_STUDENT"),
                         qUser.eq(qAbsence.student),
-                        qAbsence.course.eq(course)
+                        qAbsence.course.eq(course),
+                        qAbsence.date.between(qSchool.firstSemesterStartDate, qSchool.firstSemesterEndDate),
+                        qSchool.Id.eq(1L)
+                )
+                .fetch();
+
+        JPAQuery<User> query4 = new JPAQuery<>(entityManager);
+
+        List<Tuple> absencesSem2Tuples = query4.select(qAbsence.date, qAbsence.justified, qUser.id, qAbsence.id)
+                .from(qAbsence, qSchool)
+                .leftJoin(qUser).on(qAbsence.student.eq(qUser))
+                .where(qUser.roles.contains("ROLE_STUDENT"),
+                        qUser.eq(qAbsence.student),
+                        qAbsence.course.eq(course),
+                        qAbsence.date.between(qSchool.secondSemesterStartDate, qSchool.secondSemesterEndDate),
+                        qSchool.Id.eq(1L)
                 )
                 .fetch();
 
         List<Map<String, Object>> mapList = new ArrayList<>();
 
-        for (Tuple tuple : tuples) {
+        for (Tuple tuple : studentTuples) {
             Map<String, Object> currentMap = new HashMap<>();
             Long currentId = tuple.get(0, Long.class);
 
             double averageSem1 = 0D;
             double averageSem2 = 0D;
 
-            int markSem1 = 0;
-            int markSem2 = 0;
+            Integer markSem1 = 0;
+            Integer markSem2 = 0;
 
             int numOfMarkSem1 = 0;
             int numOfMarkSem2 = 0;
@@ -190,12 +208,21 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
             List<Map<String, Object>> markListSem1 = new ArrayList<>();
             List<Map<String, Object>> markListSem2 = new ArrayList<>();
-            List<Map<String, Object>> absenceList = new ArrayList<>();
+            List<Map<String, Object>> absenceListSem1 = new ArrayList<>();
+            List<Map<String, Object>> absenceListSem2 = new ArrayList<>();
+
 
             Map<String, Object> examGradeSem1 = new HashMap<>();
+            examGradeSem1.put("date", null);
+            examGradeSem1.put("value", null);
+
             Map<String, Object> examGradeSem2 = new HashMap<>();
 
-            for (Tuple markTupleSem1 : tupleList) {
+            examGradeSem2.put("date", null);
+            examGradeSem2.put("value", null);
+
+
+            for (Tuple markTupleSem1 : markSem1Tuples) {
                 if (Objects.equals(markTupleSem1.get(2, Long.class), currentId)) {
 
                     LocalDate currentDate = markTupleSem1.get(1, LocalDate.class);
@@ -215,32 +242,50 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 }
             }
 
-            for (Tuple markTuple : tupleList4) {
-                if (Objects.equals(markTuple.get(2, Long.class), currentId)) {
+            for (Tuple markTupleSem2 : markSem2Tuples) {
+                if (Objects.equals(markTupleSem2.get(2, Long.class), currentId)) {
 
-                    LocalDate currentDate = markTuple.get(1, LocalDate.class);
+                    LocalDate currentDate = markTupleSem2.get(1, LocalDate.class);
                     String date = "" + currentDate.getDayOfMonth() + "/" + currentDate.getMonthValue();
 
-
-                    if (Boolean.FALSE.equals(markTuple.get(3, Boolean.class))) {
+                    if (Boolean.FALSE.equals(markTupleSem2.get(3, Boolean.class))) {
                         markListSem2.add(Map.of("date", date,
-                                "value", markTuple.get(0, Integer.class)));
-                        averageSem2 = averageSem2 + markTuple.get(0, Integer.class);
+                                "value", markTupleSem2.get(0, Integer.class)));
+                        averageSem2 = averageSem2 + markTupleSem2.get(0, Integer.class);
                         numOfMarkSem2++;
+
                     } else {
-                        markSem2 = markTuple.get(0, Integer.class);
-                        examGradeSem2.put("date", date);
-                        examGradeSem2.put("value", markSem2);
+                        markSem2 = markTupleSem2.get(0, Integer.class);
+                            examGradeSem2.put("date", date);
+                            examGradeSem2.put("value", markSem2);
                     }
                 }
             }
 
-            for (Tuple absenceTuple : tupleList2) {
+            for (Tuple absenceTuple : absencesSem1Tuples) {
                 if (Objects.equals(absenceTuple.get(2, Long.class), currentId)) {
-                    absenceList.add(Map.of("date", absenceTuple.get(0, LocalDate.class),
-                            "justified", absenceTuple.get(1, Boolean.class)));
+
+                    LocalDate currentDate = absenceTuple.get(0, LocalDate.class);
+                    String date = "" + currentDate.getDayOfMonth() + "/" + currentDate.getMonthValue();
+
+                    absenceListSem1.add(Map.of("date", date,
+                            "justified", absenceTuple.get(1, Boolean.class),
+                            "id", absenceTuple.get(3, Long.class)));
                 }
             }
+
+            for (Tuple absenceTuple : absencesSem2Tuples) {
+                if (Objects.equals(absenceTuple.get(2, Long.class), currentId)) {
+
+                    LocalDate currentDate = absenceTuple.get(0, LocalDate.class);
+                    String date = "" + currentDate.getDayOfMonth() + "/" + currentDate.getMonthValue();
+
+                    absenceListSem2.add(Map.of("date", date,
+                            "justified", absenceTuple.get(1, Boolean.class),
+                            "id", absenceTuple.get(3, Long.class)));
+                }
+            }
+
             if (numOfMarkSem1 == 0)
                 numOfMarkSem1++;
 
@@ -256,9 +301,13 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                     .doubleValue();
 
             if (course.getExam()) {
+                double newAverageSem1 = 0;
+                double newAverageSem2 = 0;
 
-                double newAverageSem1 = (averageSem1 * 0.75) + ((double) markSem1 * 0.25);
-                double newAverageSem2 = (averageSem2 * 0.75) + ((double) markSem2 * 0.25);
+                if(markSem1 != null && averageSem1 != 0)
+                    newAverageSem1 = (averageSem1 * 0.75) + ((double) markSem1 * 0.25);
+                if(markSem1 != null  && averageSem2 != 0)
+                    newAverageSem2 = (averageSem2 * 0.75) + ((double) markSem2 * 0.25);
 
                 averageSem1 = BigDecimal.valueOf(newAverageSem1)
                         .setScale(2, RoundingMode.HALF_UP)
@@ -268,7 +317,9 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                         .setScale(2, RoundingMode.HALF_UP)
                         .doubleValue();
             }
+
             currentMap.put("examCourse", course.getExam());
+
             currentMap.put("studentMarksSem1", markListSem1);
             currentMap.put("averageSem1", averageSem1);
             currentMap.put("examMarkSem1", examGradeSem1);
@@ -277,7 +328,8 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             currentMap.put("averageSem2", averageSem2);
             currentMap.put("examMarkSem2", examGradeSem2);
 
-            currentMap.put("studentAbsences", absenceList);
+            currentMap.put("studentAbsencesSem1", absenceListSem1);
+            currentMap.put("studentAbsencesSem2", absenceListSem2);
 
             mapList.add(currentMap);
         }
@@ -364,6 +416,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         QMark qMark = QMark.mark;
         QCourse qCourse = QCourse.course;
         QSchool qSchool = QSchool.school;
+        QAbsence qAbsence = QAbsence.absence;
 
         List<Tuple> studentCourses = query.select(qCourse.id, qCourse.name, qCourse.exam)
                 .from(qCourse)
@@ -392,6 +445,24 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                         qSchool.Id.eq(1L))
                 .fetch();
 
+        JPAQuery<User> query3 = new JPAQuery<>(entityManager);
+
+        List<Tuple> absencesListSem1 = query3.select(qAbsence.date, qAbsence.justified, qAbsence.id, qAbsence.course.id)
+                .from(qAbsence, qSchool)
+                .where(qAbsence.student.eq(student),
+                        qAbsence.date.between(qSchool.firstSemesterStartDate,qSchool.firstSemesterEndDate),
+                        qSchool.Id.eq(1L))
+                .fetch();
+
+        JPAQuery<User> query4 = new JPAQuery<>(entityManager);
+
+        List<Tuple> absencesListSem2 = query4.select(qAbsence.date, qAbsence.justified, qAbsence.id, qAbsence.course.id)
+                .from(qAbsence, qSchool)
+                .where(qAbsence.student.eq(student),
+                        qAbsence.date.between(qSchool.secondSemesterStartDate,qSchool.secondSemesterEndDate),
+                        qSchool.Id.eq(1L))
+                .fetch();
+
         List<Map<String, Object>> mapList = new ArrayList<>();
 
         for (int i = 0; i < studentCourses.size(); i++) {
@@ -404,6 +475,15 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
             Map<String, Object> examSem1 = new HashMap<>();
             Map<String, Object> examSem2 = new HashMap<>();
+
+            examSem1.put("date", null);
+            examSem1.put("value", null);
+
+            examSem2.put("date", null);
+            examSem2.put("value", null);
+
+            List<Map<String, Object>> absenceListSem1 = new ArrayList<>();
+            List<Map<String, Object>> absenceListSem2 = new ArrayList<>();
 
             int examMarkSem1 = 0;
             int examMarkSem2 = 0;
@@ -458,6 +538,28 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 }
             }
 
+            for (Tuple absenceTuple : absencesListSem1) {
+                if(courseId == absenceTuple.get(3,Long.class)) {
+                    LocalDate currentDate = absenceTuple.get(0, LocalDate.class);
+                    String date = "" + currentDate.getDayOfMonth() + "/" + currentDate.getMonthValue();
+
+                    absenceListSem1.add(Map.of("date", date,
+                            "justified", absenceTuple.get(1, Boolean.class),
+                            "id", absenceTuple.get(2, Long.class)));
+                }
+            }
+
+            for (Tuple absenceTuple : absencesListSem2) {
+                if(courseId == absenceTuple.get(3,Long.class)) {
+                    LocalDate currentDate = absenceTuple.get(0, LocalDate.class);
+                    String date = "" + currentDate.getDayOfMonth() + "/" + currentDate.getMonthValue();
+
+                    absenceListSem2.add(Map.of("date", date,
+                            "justified", absenceTuple.get(1, Boolean.class),
+                            "id", absenceTuple.get(2, Long.class)));
+                }
+            }
+
             if (sem1 == 0) sem1++;
             if (sem2 == 0) sem2++;
 
@@ -487,10 +589,18 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             currentMap.put("examMarkSem1", examSem1);
             currentMap.put("examMarkSem2", examSem2);
 
-            currentMap.put("absencesSem1", "");
-            currentMap.put("absencesSem2", "");
+            currentMap.put("absencesSem1", absenceListSem1);
+            currentMap.put("absencesSem2", absenceListSem2);
             mapList.add(currentMap);
         }
         return mapList;
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        JPAQuery<User> query = new JPAQuery<>(entityManager);
+        QUser qUser = QUser.user;
+        return query.select(qUser).from(qUser)
+                .where(qUser.email.eq(email)).fetchFirst();
     }
 }

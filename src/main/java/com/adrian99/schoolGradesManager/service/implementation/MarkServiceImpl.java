@@ -1,9 +1,13 @@
 package com.adrian99.schoolGradesManager.service.implementation;
 
+import com.adrian99.schoolGradesManager.model.Course;
 import com.adrian99.schoolGradesManager.model.Mark;
+import com.adrian99.schoolGradesManager.model.User;
 import com.adrian99.schoolGradesManager.repository.MarkRepository;
 import com.adrian99.schoolGradesManager.service.MarkService;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 public class MarkServiceImpl implements MarkService {
@@ -42,5 +46,12 @@ public class MarkServiceImpl implements MarkService {
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
 
+    }
+    // Custom Query
+
+
+    @Override
+    public boolean checkIfExamMarkExist(LocalDate markDate, Course course, User student) {
+        return markRepository.checkIfExamMarkExist(markDate, course, student);
     }
 }

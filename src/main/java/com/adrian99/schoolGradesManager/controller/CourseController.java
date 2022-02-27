@@ -27,12 +27,12 @@ public class CourseController {
     }
 
     @GetMapping("/api/admin/allCourses")
-    public List<Course> allCourses(){
-        return (List<Course>) courseService.findAll();
+    public List<Map<String, Object>> allCourses(){
+        return courseService.findAllCourses();
     }
 
     @GetMapping("/api/teacher/courses")
-    public List<Course> allCourse(Principal principal){
+    public List<Map<String, Object>> allCourse(Principal principal){
         User teacher = userService.findByUsername(principal.getName());
 
         if(!teacher.getRoles().contains("ROLE_TEACHER"))
