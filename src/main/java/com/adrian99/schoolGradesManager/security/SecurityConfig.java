@@ -13,7 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -52,7 +52,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManagerBean(), jwtConfig, secretKey))
                 .addFilterAfter(new JwtTokenVerifier(jwtConfig, secretKey, applicationUserService), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers("/api/createUser").hasRole("ADMIN")
+                .antMatchers("/api/admin/*").hasRole("ADMIN")
+                .antMatchers("/api/teacher/*").hasRole("TEACHER")
+                .antMatchers("/api/student/*").hasRole("STUDENT")
                 .antMatchers("/","/index.html","/index","/login.html").permitAll()
                 .antMatchers("/createAdmin").permitAll()
                 .antMatchers("/css/style.css","/js/main.js").permitAll()
@@ -79,7 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
