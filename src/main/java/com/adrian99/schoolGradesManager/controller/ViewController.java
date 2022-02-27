@@ -26,6 +26,8 @@ public class ViewController {
         User user = userService.findByUsername(principal.getName());
 
         model.addAttribute("userType",user.getRoles());
+        model.addAttribute("userInfo",user);
+
         return "user";
     }
 }
