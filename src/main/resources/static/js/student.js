@@ -1,90 +1,48 @@
 document.addEventListener("DOMContentLoaded", function () {
-    studentGetCourse()
-    document.querySelector("#createMarkForm").onsubmit = function () {
-        teacherAddMark()
-        return false
-    }
+    studentGetMarkAndAbsences()
 })
 
-let courses
+function studentGetMarkAndAbsences() {
 
-function injectInSelectCourse(){
-    let form = document.getElementById("studentCourseList")
-    form.innerHTML = ''
-    for (course of courses) {
-        form.insertAdjacentHTML('beforeend',
-            `<option value="${course.courseId}">${course.courseName} - ${course.teacherFullName}</option>`)
+    table = document.querySelector("#marksTable tbody")
+
+    fetch(`/api/student/marksByStudent`,
+        {
+            method: 'GET',
+        })
+        .then(response => response.json())
+        .then(data => {
+            table.innerHTML = ""
+            for (i of data) {
+                table.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td>${i.name}</td>
+                        <td>${i.marksSem1.map(mark => `<span class="tag"> ${mark.value} la ${mark.date} </span>`).join(" ")}
+                             ${specialGrade(i.examCourse, i.examMarkSem1)}
+                            <br> <span class="tag"> Medie ${i.averageSem1} </span>                      
+                        </td>
+                        <td>${i.marksSem2.map(mark => `<span class="tag"> ${mark.value} la ${mark.date} </span>`).join(" ")}
+                            ${specialGrade(i.examCourse, i.examMarkSem2)}
+                           <br> <span class="tag"> Medie ${i.averageSem2} </span>    
+                        </td>
+                        <td>${i.absencesSem1.map(absencesSem1 => absence(absencesSem1)).join(" ")}</td>
+                        <td>${i.absencesSem2.map(absencesSem2 => absence(absencesSem2)).join(" ")}</td>
+                     
+                    </tr>`)
+            }
+        }).catch((error) => {
+        console.error('Error:', error);
+    });
+}
+function specialGrade(active, examMark){
+    if(active === true){
+        return `<br><span class="tag">Teza ${examMark.value} (pe  ${examMark.date})</span>`
     }
-    studentGetMarkAndAbsences()
+    return ''
 }
-function studentGetMarkAndAbsences(){
-    studentGetMark()
-    studentGetAbsence()
-}
-
-function studentGetCourse(){
-        fetch(`/api/student/courses`,
-        {
-            method: 'GET',
-        })
-        .then(response => response.json())
-        .then(data => {
-            courses = data
-            injectInSelectCourse()
-        }).catch((error) => {
-        console.error('Error:', error);
-    });
-}
-
-function studentGetMark(){
-
-    let currentCourseId = document.getElementById("studentCourseList").value
-
-    let markTable = document.querySelector("#marksTable tbody")
-
-    fetch(`/api/student/marks/${currentCourseId}`,
-        {
-            method: 'GET',
-        })
-        .then(response => response.json())
-        .then(data => {
-            markTable.innerHTML = ''
-            for(i of data){
-                markTable.insertAdjacentHTML('beforeend',
-                    `
-                    <tr>
-                        <td>${i.value}</td>
-                        <td>${i.date}</td>
-                    </tr>
-                `)
-            }
-        }).catch((error) => {
-        console.error('Error:', error);
-    });
-}
-
-function studentGetAbsence(){
-    let currentCourseId = document.getElementById("studentCourseList").value
-
-    let absenceTable = document.querySelector("#absencesTable tbody")
-
-    fetch(`/api/student/absences/${currentCourseId}`,
-        {
-            method: 'GET',
-        })
-        .then(response => response.json())
-        .then(data => {
-            absenceTable.innerHTML = ''
-            for(i of data){
-                absenceTable.insertAdjacentHTML('beforeend',
-                    `
-                    <tr>
-                        <td>${i.date}</td>
-                        <td>${i.justified}</td>
-                    </tr>
-                `)
-            }
-        }).catch((error) => {
-        console.error('Error:', error);
-    });
+function absence(absence){
+    if(absence.justified == true){
+        return `<span class = "tag absence-justified"> ${absence.date} motivata</span>`
+    }
+    return `<span class = "tag absence-nejustified"> ${absence.date} nemotivata</span>`
 }

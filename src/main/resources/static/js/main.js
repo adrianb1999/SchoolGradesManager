@@ -27,12 +27,23 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         })
 
-        //TEACHER
+        document.querySelector("#updateEmailForm").onsubmit = function () {
+            if (emailMatch)
+                changeUserInfo('email')
+            return false
+        }
 
-
-        //ADMIN
+        document.querySelector("#updatePasswordForm").onsubmit = function () {
+            if (passwordMatch)
+                changeUserInfo('password')
+            return false
+        }
     }
 })
+
+var passwordMatch = false
+var emailMatch = false
+
 //---LOGOUT---
 function logout() {
     Swal.fire({
@@ -68,7 +79,6 @@ function deleteAllCookies() {
 }
 
 //---LOGOUT---
-
 
 function login() {
     let name = document.getElementById("username").value;
@@ -127,4 +137,92 @@ function showAlert(message, type = 'error', title = 'Error', timer = 2000) {
         text: message,
         timer: timer,
     })
+}
+
+function changeUserInfo(inputType) {
+
+    let email = document.querySelector("#emailInput").value
+    let newPassword = document.querySelector("#passwordInput").value
+
+    let cleanForm
+    let data = {}
+    if (inputType === "email") {
+        data.email = email
+        data.password = document.querySelector("#passwordInputEmail").value
+        cleanForm = cleanEmailForm
+    } else if (inputType === "password") {
+        data.newPassword = newPassword
+        data.password = document.querySelector("#oldPasswordInput").value
+        cleanForm = cleanPasswordForm
+    }
+
+    fetch('/api/users/updateInfo',
+        {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        }).then(response => {
+        if (response.status === 200) {
+            showAlert('User information updated!', 'success', 'Success!')
+            cleanForm()
+            if (inputType === "username")
+                logoutUser();
+        } else {
+            response.json().then(data => {
+                showAlert(data.message)
+            })
+        }
+    }).catch((error) => {
+        console.error('Error:', error)
+    });
+}
+
+function setMatchText(match, message, textMessageId) {
+    if (match && message !== '') {
+        document.getElementById(textMessageId).style.color = 'green';
+        document.getElementById(textMessageId).innerHTML = message + ' match!';
+    } else if (!match && message !== '') {
+        document.getElementById(textMessageId).style.color = 'red';
+        document.getElementById(textMessageId).innerHTML = message + ' doens\'t match!';
+    } else {
+        document.getElementById(textMessageId).innerHTML = '';
+    }
+}
+
+
+function matchChecking(firstId, secondId, textMessageId) {
+
+    let match = document.getElementById(firstId).value === document.getElementById(secondId).value
+    let currentForm
+
+    if (firstId === 'emailInput') {
+        emailMatch = match
+        currentForm = 'Emails'
+    } else if (firstId === 'passwordInput') {
+        passwordMatch = match
+        currentForm = 'Passwords'
+    }
+
+    if (document.getElementById(firstId).value === '' || document.getElementById(secondId).value === '') {
+        setMatchText(match, '', textMessageId)
+    } else {
+        setMatchText(match, currentForm, textMessageId)
+    }
+}
+
+function cleanEmailForm() {
+    document.getElementById("emailInput").value = ""
+    document.getElementById("confirmEmailInput").value = ""
+    document.getElementById("passwordInputEmail").value = ""
+    document.getElementById("emailWordMessage").innerHTML = ""
+}
+
+function cleanPasswordForm() {
+    document.getElementById("passwordInput").value = ""
+    document.getElementById("confirmPasswordInput").value = ""
+    document.getElementById("oldPasswordInput").value = ""
+    document.getElementById("passWordMessage").innerHTML = ""
 }

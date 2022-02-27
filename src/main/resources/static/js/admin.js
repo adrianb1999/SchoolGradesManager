@@ -28,14 +28,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //CLOSE MODAL
     window.onclick = function (event) {
-        // if (event.target === createTeacher || event.target === createStudent ||
-        //     event.target === createStudentModal ||  event.target === createStudentModal) {
-        //     closeModal()
-        // }
+        if (event.target === createTeacher || event.target === createStudent ||
+            event.target === createStudentModal ||  event.target === createStudentModal) {
+            closeModal()
+        }
     }
-
-    //SWITCH PANELS
-
 
     //FORMS
     document.querySelector("#createTeacherForm").onsubmit = function () {
@@ -73,10 +70,10 @@ document.addEventListener("DOMContentLoaded", function () {
 })
 
 function adminGetData() {
-    adminGetCourses()
-    adminGetStudents()
-    adminGetClassrooms()
     adminGetTeachers()
+    adminGetStudents()
+    adminGetCourses()
+    adminGetClassrooms()
 }
 
 let teachers
@@ -132,12 +129,11 @@ function adminGetTeachers() {
         .then(data => {
             teachers = data
             table.innerHTML = ''
-            injectInCreateClassroomForm()
             for (i of data) {
                 table.insertAdjacentHTML("beforeend",
                     `<tr>
-                               <td>${i.firstName}</td>
-                               <td>${i.lastName}</td>
+                               <td>${i.firstName} ${i.lastName}</td>
+                               <td>${i.email}</td>
                                <td>${i.courses.map(x => `<span class="tag">${x}</span>`).join(" ")}</td>
                                <td>
                                                 <button class="changeButton" onClick="editTeacher(${i.id})">
@@ -149,6 +145,7 @@ function adminGetTeachers() {
                         </tr>`
                 )
             }
+            injectInCreateClassroomForm()
         })
         .catch((error) => {
             console.error('Error:', error);
@@ -169,8 +166,8 @@ function adminGetStudents() {
             for (i of data) {
                 table.insertAdjacentHTML("beforeend",
                     `<tr>
-                               <td>${i.firstName}</td>
-                               <td>${i.lastName}</td>
+                               <td>${i.firstName} ${i.lastName}</td>
+                               <td>${i.email}</td>
                                <td>${i.classroom}</td> 
                                <td>
                                     <button class="changeButton" onClick="editStudent(${i.id})">
@@ -203,21 +200,10 @@ function adminGetCourses() {
             for (i of data) {
                 table.insertAdjacentHTML("beforeend",
                     `<tr>
-                               <td>${i.classRoom.name}</td>
+                               <td>${i.classroomName}</td>
                                <td>${i.name}</td>
-                               <td>${i.teacher.firstName} ${i.teacher.lastName}</td>                           
-                               <td>
-                                    <button class="changeButton" onClick="editCourse(${i.id})">
-                                            <span class="material-icons">
-                                                edit
-                                            </span>
-                                    </button>
-                                    <button class="deleteButton" onClick="deleteCourse(${i.id})"> 
-                                            <span class="material-icons">
-                                                clear
-                                            </span>                                               
-                                    </button>
-                               </td>
+                               <td>${i.teacherName}</td>                           
+                               
                         </tr>`
                 )
             }
@@ -237,29 +223,19 @@ function adminGetClassrooms() {
         .then(response => response.json())
         .then(data => {
             classrooms = data
-            injectInCreateStudentForm()
-            injectInCreateCourseForm()
+
             table.innerHTML = ''
             for (i of data) {
                 table.insertAdjacentHTML("beforeend",
                     `<tr>
                                <td>${i.name}</td>
-                               <td>${i.classMaster.firstName} ${i.classMaster.lastName}</td>      
-                               <td>
-                                    <button class="changeButton" onClick="editClassroom(${i.id})">
-                                            <span class="material-icons">
-                                                edit
-                                            </span>
-                                    </button>
-                                    <button class="deleteButton" onClick="deleteClassroom(${i.id})"> 
-                                            <span class="material-icons">
-                                                clear
-                                            </span>                                               
-                                    </button>
-                               </td>        
+                               <td>${i.classMasterName}</td>    
+                               <td>${i.numOfStudents}</td>                             
                         </tr>`
                 )
             }
+            injectInCreateStudentForm()
+            injectInCreateCourseForm()
         })
         .catch((error) => {
             console.error('Error:', error);
@@ -630,8 +606,9 @@ function editCourse(courseId) {
     for (let i = 0; i < courses.length; i++) {
         if (courses[i].id === courseId) {
             document.getElementById("courseName").value = courses[i].name
-            document.getElementById("courseTeacher").value = courses[i].teacher.id
-            document.getElementById("courseClassroom").value = courses[i].classRoom.id
+            document.getElementById("courseTeacher").value = courses[i].teacherId
+            document.getElementById("courseClassroom").value = courses[i].classroomId
+            document.getElementById("examGrade").checked = courses[i].examCourse
         }
     }
     document.getElementById("createCourseModal").style.display = "block";
@@ -648,7 +625,7 @@ function editClassroom(classroomId) {
     for (let i = 0; i < classrooms.length; i++) {
         if (classrooms[i].id === classroomId) {
             document.getElementById("classroomName").value = classrooms[i].name
-            document.getElementById("classroomClassMaster").value = classrooms[i].classMaster.id
+            document.getElementById("classroomClassMaster").value = classrooms[i].classMasterId
         }
     }
 
@@ -697,6 +674,7 @@ function resetCourseForm() {
     document.getElementById("courseName").value = ""
     document.getElementById("courseTeacher").value = ""
     document.getElementById("courseClassroom").value = ""
+    document.getElementById("examGrade").checked = false
 
     document.getElementById("createCourseButton").textContent = "Create"
     document.getElementById("createCourseFormTitle").textContent = "Create course"
