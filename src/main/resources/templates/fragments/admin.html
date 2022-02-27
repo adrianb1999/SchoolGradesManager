@@ -14,14 +14,12 @@
             </div>
             <h3>Profesori</h3>
         </div>
-
         <div class="leftButtons btn-toggle-panel" data-target="#studentsInfo">
             <div class="icon">
                 <span class="material-icons md-36">school</span>
             </div>
             <h3>Elevi</h3>
         </div>
-
         <div class="leftButtons btn-toggle-panel" data-target="#coursesInfo">
             <div class="icon">
                 <span class="material-icons md-36">library_books</span>
@@ -34,17 +32,18 @@
             </div>
             <h3>Clase</h3>
         </div>
-        <div class="leftButtons btn-toggle-panel" data-target="#schoolSettings">
+        <div class="leftButtons btn-toggle-panel buttonActive" data-target="#userInfo">
             <div class="icon">
-                <span class="material-icons md-36">settings</span>
+                <span class="material-icons md-36">account_circle</span>
             </div>
-            <h3>Setari scoala</h3>
+            <h3>Informatii cont</h3>
         </div>
+
         <div class="leftButtons logout" id="logout">
             <div class="icon">
                 <span class="material-icons md-36">logout</span>
             </div>
-            <h3>Delogare</h3>
+            <h3>Logout</h3>
         </div>
     </div>
     <div class="right">
@@ -65,10 +64,10 @@
                         <table id="teacherTable">
                             <thead>
                             <tr>
-                                <th>Prenume</th>
-                                <th>Nume de familie</th>
-                                <th>Materii</th>
-                                <th style="width: 85px">Optiuni</th>
+                                <th>Nume</th>
+                                <th>Email</th>
+                                <th style="width: 350px">Materii</th>
+                                <th style="width: 85px">Editeaza</th>
                             </tr>
                             </thead>
                             <tbody></tbody>
@@ -92,10 +91,10 @@
                         <table id="studentTable">
                             <thead>
                             <tr>
-                                <th>First name</th>
-                                <th>Last name</th>
-                                <th>Class</th>
-                                <th style="width: 85px">Actions</th>
+                                <th>Nume</th>
+                                <th>Email</th>
+                                <th>Clasa</th>
+                                <th style="width: 85px">Editeaza</th>
                             </tr>
                             </thead>
                             <tbody></tbody>
@@ -122,7 +121,6 @@
                                 <th>Class</th>
                                 <th>Name</th>
                                 <th>Teacher</th>
-                                <th style="width: 85px">Actions</th>
                             </tr>
                             </thead>
                             <tbody></tbody>
@@ -146,9 +144,9 @@
                         <table id="classroomsTable">
                             <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Class master</th>
-                                <th style="width: 85px">Actions</th>
+                                <th>Nume</th>
+                                <th>Diriginte</th>
+                                <th>Elevi inscrisi</th>
                             </tr>
                             </thead>
                             <tbody></tbody>
@@ -156,15 +154,42 @@
                     </div>
                 </div>
             </div>
-            <div class="panel" id="schoolSettings">
+            <div class="panel" id="userInfo">
                 <div class="panel-head">
                     <div class="tableInfoLeft">
-                        <h2>Setari scoala</h2>
+                        <h2>Detalii cont</h2>
                     </div>
                 </div>
-                <div class="studentContent panel-body">
-                    <div class="tableLimits">
-
+                <div class="userContent panel-body">
+                    <div class="accountInfo userInformations">
+                        <h3 th:text="'Username: ' + ${userInfo.username}"></h3>
+                        <h3 th:text="'Prenume: ' + ${userInfo.firstName}"></h3>
+                        <h3 th:text="'Nume familie: ' + ${userInfo.lastName}"></h3>
+                        <h3 th:text="'Email: ' + ${userInfo.email}"></h3>
+                    </div>
+                    <div class="accountInfo email">
+                        <h3>Change email</h3>
+                        <form action="#" id="updateEmailForm" autocomplete="off">
+                            <input type="email" id="emailInput" placeholder="New email"
+                                   onkeyup="matchChecking('emailInput', 'confirmEmailInput','emailWordMessage')">
+                            <input type="email" id="confirmEmailInput" placeholder="Confirm new email"
+                                   onkeyup="matchChecking('emailInput', 'confirmEmailInput','emailWordMessage')">
+                            <p class="message" id="emailWordMessage"></p>
+                            <input type="password" id="passwordInputEmail" placeholder="Password">
+                            <button type="submit" class="button">Save</button>
+                        </form>
+                    </div>
+                    <div class="accountInfo password">
+                        <h3>Change password</h3>
+                        <form action="#" id="updatePasswordForm" autocomplete="off">
+                            <input type="password" id="passwordInput" placeholder="New password"
+                                   onkeyup="matchChecking('passwordInput', 'confirmPasswordInput','passWordMessage')">
+                            <input type="password" id="confirmPasswordInput" placeholder="Confirm new password"
+                                   onkeyup="matchChecking('passwordInput', 'confirmPasswordInput','passWordMessage')">
+                            <p class="message" id="passWordMessage"></p>
+                            <input type="password" id="oldPasswordInput" placeholder="Old password">
+                            <button type="submit" class="button">Save</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -178,11 +203,11 @@
         <form action="#" autocomplete="off" id="createTeacherForm">
             <h3 id="createTeacherFormTitle">Create teacher account</h3>
             <input type="Text" id="teacherUsername" placeholder="Username..."><br>
-            <input type="Text" id="teacherFirstName" placeholder="First name..."><br>
-            <input type="Text" id="teacherLastName" placeholder="Last name..."><br>
+            <input type="Text" id="teacherFirstName" placeholder="Prenume..."><br>
+            <input type="Text" id="teacherLastName" placeholder="Nume familie..."><br>
             <input type="Text" id="teacherEmail" placeholder="Email..."><br>
             <br>
-            <button class="button" id="createTeacherButton">Create</button>
+            <button class="button" id="createTeacherButton">Adauga!</button>
         </form>
     </div>
 </div>
@@ -193,13 +218,13 @@
         <form action="#" autocomplete="off" id="createStudentForm">
             <h3 id="createStudentFormTitle">Create student account</h3>
             <input type="Text" id="studentUsername" placeholder="Username..."><br>
-            <input type="Text" id="studentFirstName" placeholder="First name..."><br>
-            <input type="Text" id="studentLastName" placeholder="Last name..."><br>
+            <input type="Text" id="studentFirstName" placeholder="Prenume..."><br>
+            <input type="Text" id="studentLastName" placeholder="Nume familie..."><br>
             <input type="Text" id="studentEmail" placeholder="Email..."><br>
             <select id="studentClassroom">
             </select>
             <br>
-            <button class="button" id="createStudentButton">Create</button>
+            <button class="button" id="createStudentButton">Adauga!</button>
         </form>
     </div>
 </div>
@@ -209,11 +234,11 @@
         <span class="close">&times;</span>
         <form action="#" autocomplete="off" id="createClassroomForm">
             <h3 id="createClassroomFormTitle">Create classroom</h3>
-            <input type="Text" id="classroomName" placeholder="Name..."><br>
-            <select id="classroomClassMaster" >
+            <input type="Text" id="classroomName" placeholder="Denumire..."><br>
+            <select id="classroomClassMaster">
             </select>
             <br>
-            <button class="button" id="createClassroomButton">Create</button>
+            <button class="button" id="createClassroomButton">Adauga!</button>
         </form>
     </div>
 </div>
@@ -223,16 +248,16 @@
         <span class="close">&times;</span>
         <form action="#" autocomplete="off" id="createCourseForm">
             <h3 id="createCourseFormTitle">Create course</h3>
-            <input type="Text" id="courseName" placeholder="Name..."><br>
+            <input type="Text" id="courseName" placeholder="Denumire..."><br>
 
-            <select id="courseTeacher" >
+            <select id="courseTeacher">
             </select><br>
-            <select id="courseClassroom" >
+            <select id="courseClassroom">
             </select><br>
             <input type="checkbox" id="examGrade">
             <label for="examGrade">Are teza?</label><br>
             <br>
-            <button class="button" id="createCourseButton">Create</button>
+            <button class="button" id="createCourseButton">Adauga!</button>
         </form>
     </div>
 </div>

@@ -8,18 +8,24 @@
         <div class="logo">
             <h2>School Grades Manager by adrian99</h2>
         </div>
-        <div class="leftButtons btn-toggle-panel" data-target="#teachersInfo">
+        <div class="leftButtons btn-toggle-panel" data-target="#myCourses">
             <div class="icon">
                 <span class="material-icons md-36">account_circle</span>
             </div>
             <h3>Materiile mele</h3>
+        </div>
+        <div class="leftButtons btn-toggle-panel buttonActive" data-target="#userInfo">
+            <div class="icon">
+                <span class="material-icons md-36">account_circle</span>
+            </div>
+            <h3>Informatii cont</h3>
         </div>
 
         <div class="leftButtons logout-student" id="logout">
             <div class="icon">
                 <span class="material-icons md-36">logout</span>
             </div>
-            <h3>Decontectare</h3>
+            <h3>Logout</h3>
         </div>
     </div>
     <div class="right">
@@ -29,32 +35,60 @@
                     <div class="tableInfoLeft">
                         <h2>Materiile mele</h2>
                     </div>
-                    <div class="tableInfoRight">
-                        <select id="studentCourseList" onchange="studentGetMarkAndAbsences()">Select course</select>
-                    </div>
                 </div>
-                <div class="teacherContent panel-body">
+                <div class="studentContent panel-body">
                     <div class="tableLimits">
                         <table id="marksTable">
                             <thead>
                             <tr>
-                                <th>Nota</th>
-                                <th>Data</th>
+                                <th rowspan="2">Materie</th>
+                                <th colspan="2" style="width: 400px">Note</th>
+                                <th colspan="2">Absente</th>
                             </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-
-                        <table id="absencesTable">
-                            <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Motivata?</th>
+                                <th style="width: 150px">Sem. 1</th>
+                                <th style="width: 150px">Sem. 2</th>
+                                <th>Sem. 1</th>
+                                <th>Sem. 2</th>
                             </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
-
+                    </div>
+                </div>
+            </div>
+            <div class="panel" id="userInfo">
+                <div class="panel-head">
+                    <div class="tableInfoLeft">
+                        <h2>Detalii cont</h2>
+                    </div>
+                </div>
+                <div class="userContent panel-body">
+                    <div class="accountInfo userInformations">
+                        <h3 th:text="'Username: ' + ${userInfo.username}"></h3>
+                        <h3 th:text="'Prenume: ' + ${userInfo.firstName}"></h3>
+                        <h3 th:text="'Nume familie: ' + ${userInfo.lastName}"></h3>
+                        <h3 th:text="'Email: ' + ${userInfo.email}"></h3>
+                    </div>
+                    <div class="accountInfo email">
+                        <h3>Change email</h3>
+                        <form action="#" id="updateEmailForm" autocomplete="off">
+                            <input type="email" id="emailInput" placeholder="New email" onkeyup="matchChecking('emailInput', 'confirmEmailInput','emailWordMessage')">
+                            <input type="email" id="confirmEmailInput" placeholder="Confirm new email" onkeyup="matchChecking('emailInput', 'confirmEmailInput','emailWordMessage')">
+                            <p class="message" id="emailWordMessage"></p>
+                            <input type="password" id="passwordInputEmail" placeholder="Password">
+                            <button type="submit" class="button">Save</button>
+                        </form>
+                    </div>
+                    <div class="accountInfo password">
+                        <h3>Change password</h3>
+                        <form action="#" id="updatePasswordForm" autocomplete="off">
+                            <input type="password" id="passwordInput" placeholder="New password" onkeyup="matchChecking('passwordInput', 'confirmPasswordInput','passWordMessage')">
+                            <input type="password" id="confirmPasswordInput" placeholder="Confirm new password" onkeyup="matchChecking('passwordInput', 'confirmPasswordInput','passWordMessage')">
+                            <p class="message" id="passWordMessage"></p>
+                            <input type="password" id="oldPasswordInput" placeholder="Old password">
+                            <button type="submit" class="button">Save</button>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -22,6 +22,13 @@
             <h3>Clasa mea</h3>
         </div>
 
+        <div class="leftButtons btn-toggle-panel buttonActive" data-target="#userInfo">
+            <div class="icon">
+                <span class="material-icons md-36">account_circle</span>
+            </div>
+            <h3>Informatii cont</h3>
+        </div>
+
         <div class="leftButtons logout-teacher" id="logout">
             <div class="icon">
                 <span class="material-icons md-36">logout</span>
@@ -37,7 +44,7 @@
                         <h2>Materiile mele</h2>
                     </div>
                     <div class="tableInfoRight">
-                       <select id="teacherClassroomsList" onchange="teacherLoadStudent()">Select course</select>
+                        <select id="teacherClassroomsList" onchange="teacherLoadStudent()">Select course</select>
                     </div>
                 </div>
                 <div class="teacherContent panel-body">
@@ -51,10 +58,10 @@
                                 <th rowspan="2">Optiuni</th>
                             </tr>
                             <tr>
-                                <th>Sem. 1</th>
-                                <th>Sem. 2</th>
-                                <th>Sem. 1</th>
-                                <th>Sem. 2</th>
+                                <th style="width: 175px">Sem. 1</th>
+                                <th style="width: 175px">Sem. 2</th>
+                                <th style="width: 175px">Sem. 1</th>
+                                <th style="width: 175px">Sem. 2</th>
                             </tr>
                             </thead>
                             <tbody></tbody>
@@ -75,20 +82,59 @@
                     <div class="tableLimits">
                         <table id="myClassroomTable">
                             <thead>
-                                <tr>
-                                    <th rowspan="2">Materie</th>
-                                    <th colspan="2">Note</th>
-                                    <th colspan="2">Absente</th>
-                                </tr>
-                                <tr>
-                                    <th>Sem. 1</th>
-                                    <th>Sem. 2</th>
-                                    <th>Sem. 1</th>
-                                    <th>Sem. 2</th>
-                                </tr>
+                            <tr>
+                                <th rowspan="2">Materie</th>
+                                <th colspan="2">Note</th>
+                                <th colspan="2">Absente</th>
+                            </tr>
+                            <tr>
+                                <th style="width: 215px">Sem. 1</th>
+                                <th style="width: 215px">Sem. 2</th>
+                                <th style="width: 215px">Sem. 1</th>
+                                <th style="width: 215px">Sem. 2</th>
+                            </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+            <div class="panel" id="userInfo">
+                <div class="panel-head">
+                    <div class="tableInfoLeft">
+                        <h2>Detalii cont</h2>
+                    </div>
+                </div>
+                <div class="userContent panel-body">
+                    <div class="accountInfo userInformations">
+                        <h3 th:text="'Username: ' + ${userInfo.username}"></h3>
+                        <h3 th:text="'Prenume: ' + ${userInfo.firstName}"></h3>
+                        <h3 th:text="'Nume familie: ' + ${userInfo.lastName}"></h3>
+                        <h3 th:text="'Email: ' + ${userInfo.email}"></h3>
+                    </div>
+                    <div class="accountInfo email">
+                        <h3>Change email</h3>
+                        <form action="#" id="updateEmailForm" autocomplete="off">
+                            <input type="email" id="emailInput" placeholder="New email"
+                                   onkeyup="matchChecking('emailInput', 'confirmEmailInput','emailWordMessage')">
+                            <input type="email" id="confirmEmailInput" placeholder="Confirm new email"
+                                   onkeyup="matchChecking('emailInput', 'confirmEmailInput','emailWordMessage')">
+                            <p class="message" id="emailWordMessage"></p>
+                            <input type="password" id="passwordInputEmail" placeholder="Password">
+                            <button type="submit" class="button">Save</button>
+                        </form>
+                    </div>
+                    <div class="accountInfo password">
+                        <h3>Change password</h3>
+                        <form action="#" id="updatePasswordForm" autocomplete="off">
+                            <input type="password" id="passwordInput" placeholder="New password"
+                                   onkeyup="matchChecking('passwordInput', 'confirmPasswordInput','passWordMessage')">
+                            <input type="password" id="confirmPasswordInput" placeholder="Confirm new password"
+                                   onkeyup="matchChecking('passwordInput', 'confirmPasswordInput','passWordMessage')">
+                            <p class="message" id="passWordMessage"></p>
+                            <input type="password" id="oldPasswordInput" placeholder="Old password">
+                            <button type="submit" class="button">Save</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -100,14 +146,14 @@
     <div class="modal-content">
         <span class="close">&times;</span>
         <form action="#" autocomplete="off" id="createMarkForm">
-            <h3 id="createMarkFormTitle">Add mark</h3>
-            <input type="number" id="markValue" placeholder="Mark value.."><br>
-            <input type="Date" id="markDate" placeholder="Date..."><br>
+            <h3 id="createMarkFormTitle">Adauga nota</h3>
+            <input type="number" id="markValue" placeholder="Nota.."><br>
+            <input type="Date" id="markDate" placeholder="Data..."><br>
             <input type="checkbox" id="examGrade">
             <label for="examGrade">Nota teza?</label><br>
             <br>
             <br>
-            <button class="button" id="createMarkButton">Create</button>
+            <button class="button" id="createMarkButton">Adauga!</button>
         </form>
     </div>
 </div>
@@ -116,10 +162,10 @@
     <div class="modal-content">
         <span class="close">&times;</span>
         <form action="#" autocomplete="off" id="createAbsenceForm">
-            <h3 id="createAbsenceFormTitle">Add absence</h3>
-            <input type="Date" id="absenceDate" placeholder="Date..."><br>
+            <h3 id="createAbsenceFormTitle">Adauga absenta</h3>
+            <input type="Date" id="absenceDate" placeholder="Data..."><br>
             <br>
-            <button class="button" id="createAbsenceButton">Create</button>
+            <button class="button" id="createAbsenceButton">Adauga!</button>
         </form>
     </div>
 </div>
