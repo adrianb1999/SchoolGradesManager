@@ -1,5 +1,6 @@
 package com.adrian99.schoolGradesManager.email;
 
+import com.adrian99.schoolGradesManager.token.TokenType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -18,7 +19,7 @@ public class EmailSender {
     }
 
     @Async
-    public void sendPasswordEmail(String email, String username, String password) throws MessagingException {
+    public void sendPasswordEmail(String email, String username, String password, String token, TokenType tokenType) throws MessagingException {
 
         MimeMessage mailMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mailMessage, "utf-8");
@@ -27,10 +28,14 @@ public class EmailSender {
         helper.setTo(email);
 
         String link;
-
-        link = "Salut, numele dvs. de utilizator este: " + username + ", iar parola: " + password;
-        helper.setSubject("Account password");
-
+        if (tokenType.equals(TokenType.ACCOUNT_ACTIVATION)) {
+            link = "Salut, numele dvs. de utilizator este: " + username + ", iar parola: " + password +
+                    "\n Pentru a activa contul accesati urmatorul link: <a href=\"http://localhost:10000/passwordResetForm.html?token=" + token + "\" target=\"_blank\">Link</a>";
+            helper.setSubject("Informatii cont.");
+        } else {
+            link = "Link pentru resetare parola: <a href=\"http://localhost:10000/passwordResetForm.html?token=" + token + "\" target=\"_blank\">Link</a>";
+            helper.setSubject("Resetare parola.");
+        }
         helper.setText(link, true);
 
         mailSender.send(mailMessage);

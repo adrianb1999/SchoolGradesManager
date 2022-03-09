@@ -6,4 +6,5 @@ import com.adrian99.schoolGradesManager.repository.custom.UserCustomRepository;
 public interface UserService extends CrudService<User, Long>, UserCustomRepository{
     String passwordGenerator(int length);
     boolean isEmailValid(String email);
+    String generateToken(User user);
 }
