@@ -17,7 +17,7 @@ body{
 }
 .loginCard{
     background-color: white;
-    height: 315px;
+    min-height: 235px;
     width: 400px;
     border-radius: 20px;
     margin: auto;
@@ -324,7 +324,7 @@ tbody tr:nth-child(even) {
 
 .addButton {
     border-radius: 7px;
-    background-color: #55efc4;
+    background-color: #5f9e72;
 }
 
 ::-webkit-scrollbar {
@@ -381,7 +381,7 @@ span.tag {
     font-size: 13px;
     border: 1px solid #2c3e50;
     border-radius: 6px;
-    margin: 2px;
+    margin: 4px;
 }
 .absence-nejustified{
     background-color: rgba(255, 0, 0, 0.75);
