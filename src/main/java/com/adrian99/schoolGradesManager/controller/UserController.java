@@ -8,6 +8,9 @@ import com.adrian99.schoolGradesManager.model.User;
 import com.adrian99.schoolGradesManager.service.ClassroomService;
 import com.adrian99.schoolGradesManager.service.CourseService;
 import com.adrian99.schoolGradesManager.service.UserService;
+import com.adrian99.schoolGradesManager.service.VerificationTokenService;
+import com.adrian99.schoolGradesManager.token.TokenType;
+import com.adrian99.schoolGradesManager.token.VerificationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +19,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.adrian99.schoolGradesManager.token.TokenType.PASSWORD_RESET;
 
 @RestController
 public class UserController {
@@ -26,13 +31,15 @@ public class UserController {
     private final UserService userService;
     private final CourseService courseService;
     private final EmailSender emailSender;
+    private final VerificationTokenService verificationTokenService;
 
-    public UserController(PasswordEncoder passwordEncoder, ClassroomService classroomService, UserService userService, CourseService courseService, EmailSender emailSender) {
+    public UserController(PasswordEncoder passwordEncoder, ClassroomService classroomService, UserService userService, CourseService courseService, EmailSender emailSender, VerificationTokenService verificationTokenService) {
         this.passwordEncoder = passwordEncoder;
         this.classroomService = classroomService;
         this.userService = userService;
         this.courseService = courseService;
         this.emailSender = emailSender;
+        this.verificationTokenService = verificationTokenService;
     }
 
     @GetMapping("/api/admin/allTeachers")
@@ -59,7 +66,9 @@ public class UserController {
         user.setLastName(info.get("lastName"));
         user.setRoles("ROLE_TEACHER");
 
-        emailSender.sendPasswordEmail(user.getEmail(), user.getUsername(), user.getPassword());
+        String token = userService.generateToken(user);
+
+        emailSender.sendPasswordEmail(user.getEmail(), user.getUsername(), user.getPassword(), token, TokenType.ACCOUNT_ACTIVATION);
 
         return userService.save(user);
     }
@@ -84,7 +93,10 @@ public class UserController {
 
             User createdUser = userService.save(user);
 
-            emailSender.sendPasswordEmail(user.getEmail(), user.getUsername(), user.getPassword());
+            String token = userService.generateToken(createdUser);
+
+            emailSender.sendPasswordEmail(user.getEmail(), user.getUsername(), user.getPassword(), token, TokenType.ACCOUNT_ACTIVATION);
+
         }
 
         return null;
@@ -120,7 +132,9 @@ public class UserController {
 
         User createdUser = userService.save(user);
 
-        emailSender.sendPasswordEmail(user.getEmail(), user.getUsername(), user.getPassword());
+        String token = userService.generateToken(createdUser);
+
+        emailSender.sendPasswordEmail(user.getEmail(), user.getUsername(), user.getPassword(), token, TokenType.ACCOUNT_ACTIVATION);
 
         Classroom classroom = classroomService.findById(Long.parseLong(info.get("classroom_id")));
         classroom.getStudents().add(createdUser);
@@ -149,7 +163,10 @@ public class UserController {
 
             User createdUser = userService.save(user);
 
-            emailSender.sendPasswordEmail(user.getEmail(), user.getUsername(), user.getPassword());
+            String token = userService.generateToken(createdUser);
+
+            emailSender.sendPasswordEmail(user.getEmail(), user.getUsername(), user.getPassword(), token, TokenType.ACCOUNT_ACTIVATION);
+
 
             Classroom classroom = classroomService.findById(Long.parseLong(student.get("classroom_id")));
             classroom.getStudents().add(createdUser);
@@ -220,7 +237,7 @@ public class UserController {
         userService.save(admin);
     }
 
-    @PutMapping("/api/users/updateInfo")
+    @PutMapping("/api/user/updateInfo")
     public User saveOrUpdate(@RequestBody Map<String, String> userInfo, Principal principal) {
 
         if(userInfo.get("password") == null)
@@ -257,5 +274,42 @@ public class UserController {
             updateUser.setPassword(passwordEncoder.encode(userInfo.get("newPassword")));
         }
         return userService.save(updateUser);
+    }
+
+    @PostMapping("/api/user/resetPasswordLink")
+    public void sendResetToken(@RequestBody Map<String, String> userInfo) throws MessagingException {
+
+        String email = userInfo.get("email");
+
+        if(email == null)
+            throw new ApiRequestException("Email is null!");
+
+        if(!userService.isEmailValid(email))
+            throw new ApiRequestException("Email is invalid!");
+
+        User currentUser = userService.findByEmail(userInfo.get("email"));
+
+        if(currentUser == null)
+            throw new ApiRequestException("The email doesn't exist!");
+
+        if(!currentUser.getActive())
+            throw new ApiRequestException("The account is not activated!");
+
+        String token = userService.generateToken(currentUser);
+
+        emailSender.sendPasswordEmail(currentUser.getEmail(), currentUser.getUsername(), currentUser.getPassword(),  token, PASSWORD_RESET);
+    }
+
+    @PostMapping("/api/user/passwordReset")
+    public void resetPassword(@RequestBody User user,
+                              @RequestParam(name = "token") String token) {
+        VerificationToken currentToken = verificationTokenService.isTokenValid(token);
+
+        User currentUser = currentToken.getUser();
+        currentUser.setPassword(user.getPassword());
+
+        userService.save(currentUser);
+
+        verificationTokenService.deleteById(currentToken.getId());
     }
 }

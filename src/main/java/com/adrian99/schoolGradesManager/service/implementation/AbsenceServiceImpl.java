@@ -49,8 +49,6 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     //Custom repository
-
-
     @Override
     public boolean checkIfAbsenceExists(LocalDate date, Course course, User student) {
         return absenceRepository.checkIfAbsenceExists(date, course, student);

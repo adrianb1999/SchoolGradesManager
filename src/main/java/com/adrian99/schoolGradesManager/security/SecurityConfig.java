@@ -52,11 +52,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManagerBean(), jwtConfig, secretKey))
                 .addFilterAfter(new JwtTokenVerifier(jwtConfig, secretKey, applicationUserService), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers("/api/admin/*").hasRole("ADMIN")
-                .antMatchers("/api/teacher/*").hasRole("TEACHER")
-                .antMatchers("/api/student/*").hasRole("STUDENT")
-                .antMatchers("/","/index.html","/index","/login.html").permitAll()
-                .antMatchers("/createAdmin").permitAll()
+                .antMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                .antMatchers("/api/teacher/**").hasAuthority("ROLE_TEACHER")
+                .antMatchers("/api/student/**").hasAuthority("ROLE_STUDENT")
+                .antMatchers("/","/index.html","/index","/login.html","/resetPassword.html","/passwordResetForm.html","/api/user/passwordReset").permitAll()
+                .antMatchers("/createAdmin", "/api/user/resetPasswordLink").permitAll()
                 .antMatchers("/css/style.css","/js/main.js").permitAll()
                 .anyRequest().authenticated();
     }

@@ -50,12 +50,13 @@ public class AbsenceController {
         Course course = courseService.findById(Long.parseLong(info.get("course_id")));
 
         DayOfWeek dayOfWeek = DayOfWeek.from(LocalDate.parse(info.get("date")));
-        if(dayOfWeek.equals(DayOfWeek.SUNDAY) || dayOfWeek.equals(DayOfWeek.SATURDAY))
+        if (dayOfWeek.equals(DayOfWeek.SUNDAY) || dayOfWeek.equals(DayOfWeek.SATURDAY))
             throw new ApiRequestException("Nu se pot adauga absente in weekend!");
 
         if (absenceService.checkIfAbsenceExists(LocalDate.parse(info.get("date")), course, student))
-                throw new ApiRequestException("Exista deja o absenta pe ziua de azi la aceasta materie!");
-            absence.setStudent(student);
+            throw new ApiRequestException("Exista deja o absenta pe ziua de azi la aceasta materie!");
+
+        absence.setStudent(student);
         absence.setCourse(course);
         absence.setJustified(false);
         absence.setDate(LocalDate.parse(info.get("date")));

@@ -56,9 +56,9 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
         List<Map<String, Object>> teacherList = new ArrayList<>();
 
-        Set<Long> teacherSet = teachers.stream().map(tuple -> tuple.get(0,Long.class)).collect(Collectors.toSet());
+        Set<Long> teacherSet = teachers.stream().map(tuple -> tuple.get(0, Long.class)).collect(Collectors.toSet());
 
-        for(Long id : teacherSet){
+        for (Long id : teacherSet) {
             String username = "";
             String email = "";
             String firstName = "";
@@ -68,8 +68,8 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
             List<String> courseList = new ArrayList<>();
 
-            for(var teacher : teachers){
-                if(teacher.get(0,Long.class) == id){
+            for (var teacher : teachers) {
+                if (teacher.get(0, Long.class) == id) {
                     username = teacher.get(1, String.class);
                     email = teacher.get(2, String.class);
                     firstName = teacher.get(3, String.class);
@@ -77,8 +77,8 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                     courseName = teacher.get(5, String.class);
                     courseClassName = teacher.get(6, String.class);
 
-                    if(courseName != null)
-                        courseList.add(courseName + " " + courseClassName);
+                    if (courseName != null)
+                        courseList.add(courseName + ", clasa " + courseClassName);
                     else
                         courseList.add("Nu preda nicio materie!");
                 }
@@ -94,7 +94,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             ));
         }
 
-       return teacherList;
+        return teacherList;
     }
 
     @Override
@@ -187,11 +187,11 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 )
                 .fetch();
 
-        List<Map<String, Object>> mapList = new ArrayList<>();
+        List<Map<String, Object>> studentsMapList = new ArrayList<>();
 
-        for (Tuple tuple : studentTuples) {
+        for (Tuple student : studentTuples) {
             Map<String, Object> currentMap = new HashMap<>();
-            Long currentId = tuple.get(0, Long.class);
+            Long currentId = student.get(0, Long.class);
 
             double averageSem1 = 0D;
             double averageSem2 = 0D;
@@ -203,8 +203,8 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             int numOfMarkSem2 = 0;
 
             currentMap.put("student_id", currentId);
-            currentMap.put("studentFirstName", tuple.get(1, String.class));
-            currentMap.put("studentLastName", tuple.get(2, String.class));
+            currentMap.put("studentFirstName", student.get(1, String.class));
+            currentMap.put("studentLastName", student.get(2, String.class));
 
             List<Map<String, Object>> markListSem1 = new ArrayList<>();
             List<Map<String, Object>> markListSem2 = new ArrayList<>();
@@ -234,7 +234,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                         averageSem1 = averageSem1 + markTupleSem1.get(0, Integer.class);
                         numOfMarkSem1++;
                     } else {
-
                         markSem1 = markTupleSem1.get(0, Integer.class);
                         examGradeSem1.put("date", date);
                         examGradeSem1.put("value", markSem1);
@@ -256,8 +255,8 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
                     } else {
                         markSem2 = markTupleSem2.get(0, Integer.class);
-                            examGradeSem2.put("date", date);
-                            examGradeSem2.put("value", markSem2);
+                        examGradeSem2.put("date", date);
+                        examGradeSem2.put("value", markSem2);
                     }
                 }
             }
@@ -286,36 +285,28 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 }
             }
 
-            if (numOfMarkSem1 == 0)
-                numOfMarkSem1++;
+            if (numOfMarkSem1 != 0) {
+                averageSem1 = BigDecimal.valueOf(averageSem1 / numOfMarkSem1)
+                        .setScale(2, RoundingMode.HALF_UP)
+                        .doubleValue();
+            }
 
-            if (numOfMarkSem2 == 0)
-                numOfMarkSem2++;
-
-            averageSem1 = BigDecimal.valueOf(averageSem1 / numOfMarkSem1)
-                    .setScale(2, RoundingMode.HALF_UP)
-                    .doubleValue();
-
-            averageSem2 = BigDecimal.valueOf(averageSem2 / numOfMarkSem2)
-                    .setScale(2, RoundingMode.HALF_UP)
-                    .doubleValue();
+            if (numOfMarkSem2 != 0) {
+                averageSem2 = BigDecimal.valueOf(averageSem2 / numOfMarkSem2)
+                        .setScale(2, RoundingMode.HALF_UP)
+                        .doubleValue();
+            }
 
             if (course.getExam()) {
-                double newAverageSem1 = 0;
-                double newAverageSem2 = 0;
+                if (markSem1 != null && averageSem1 != 0)
+                    averageSem1 = BigDecimal.valueOf((averageSem1 * 0.75) + ((double) markSem1 * 0.25))
+                            .setScale(2, RoundingMode.HALF_UP)
+                            .doubleValue();
 
-                if(markSem1 != null && averageSem1 != 0)
-                    newAverageSem1 = (averageSem1 * 0.75) + ((double) markSem1 * 0.25);
-                if(markSem1 != null  && averageSem2 != 0)
-                    newAverageSem2 = (averageSem2 * 0.75) + ((double) markSem2 * 0.25);
-
-                averageSem1 = BigDecimal.valueOf(newAverageSem1)
-                        .setScale(2, RoundingMode.HALF_UP)
-                        .doubleValue();
-
-                averageSem2 = BigDecimal.valueOf(newAverageSem2)
-                        .setScale(2, RoundingMode.HALF_UP)
-                        .doubleValue();
+                if (markSem1 != null && averageSem2 != 0)
+                    averageSem2 = BigDecimal.valueOf((averageSem2 * 0.75) + ((double) markSem2 * 0.25))
+                            .setScale(2, RoundingMode.HALF_UP)
+                            .doubleValue();
             }
 
             currentMap.put("examCourse", course.getExam());
@@ -331,10 +322,10 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             currentMap.put("studentAbsencesSem1", absenceListSem1);
             currentMap.put("studentAbsencesSem2", absenceListSem2);
 
-            mapList.add(currentMap);
+            studentsMapList.add(currentMap);
         }
 
-        return mapList;
+        return studentsMapList;
     }
 
     @Override
@@ -450,7 +441,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         List<Tuple> absencesListSem1 = query3.select(qAbsence.date, qAbsence.justified, qAbsence.id, qAbsence.course.id)
                 .from(qAbsence, qSchool)
                 .where(qAbsence.student.eq(student),
-                        qAbsence.date.between(qSchool.firstSemesterStartDate,qSchool.firstSemesterEndDate),
+                        qAbsence.date.between(qSchool.firstSemesterStartDate, qSchool.firstSemesterEndDate),
                         qSchool.Id.eq(1L))
                 .fetch();
 
@@ -459,7 +450,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         List<Tuple> absencesListSem2 = query4.select(qAbsence.date, qAbsence.justified, qAbsence.id, qAbsence.course.id)
                 .from(qAbsence, qSchool)
                 .where(qAbsence.student.eq(student),
-                        qAbsence.date.between(qSchool.secondSemesterStartDate,qSchool.secondSemesterEndDate),
+                        qAbsence.date.between(qSchool.secondSemesterStartDate, qSchool.secondSemesterEndDate),
                         qSchool.Id.eq(1L))
                 .fetch();
 
@@ -539,7 +530,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             }
 
             for (Tuple absenceTuple : absencesListSem1) {
-                if(courseId == absenceTuple.get(3,Long.class)) {
+                if (courseId == absenceTuple.get(3, Long.class)) {
                     LocalDate currentDate = absenceTuple.get(0, LocalDate.class);
                     String date = "" + currentDate.getDayOfMonth() + "/" + currentDate.getMonthValue();
 
@@ -550,7 +541,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             }
 
             for (Tuple absenceTuple : absencesListSem2) {
-                if(courseId == absenceTuple.get(3,Long.class)) {
+                if (courseId == absenceTuple.get(3, Long.class)) {
                     LocalDate currentDate = absenceTuple.get(0, LocalDate.class);
                     String date = "" + currentDate.getDayOfMonth() + "/" + currentDate.getMonthValue();
 
@@ -560,20 +551,23 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 }
             }
 
-            if (sem1 == 0) sem1++;
-            if (sem2 == 0) sem2++;
+            if (sem1 != 0)
+                averageSem1 = BigDecimal.valueOf(averageSem1 / sem1).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-            averageSem1 = BigDecimal.valueOf(averageSem1 / sem1).setScale(2, RoundingMode.HALF_UP).doubleValue();
-            averageSem2 = BigDecimal.valueOf(averageSem2 / sem2).setScale(2, RoundingMode.HALF_UP).doubleValue();
+            if (sem2 != 0)
+                averageSem2 = BigDecimal.valueOf(averageSem2 / sem2).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
             if (Boolean.TRUE.equals(studentCourses.get(0).get(2, Boolean.class))) {
-                averageSem1 = BigDecimal.valueOf(averageSem1 * 0.75 + examMarkSem1 * 0.25)
-                        .setScale(2, RoundingMode.HALF_UP)
-                        .doubleValue();
 
-                averageSem2 = BigDecimal.valueOf(averageSem2 * 0.75 + examMarkSem2 * 0.25)
-                        .setScale(2, RoundingMode.HALF_UP)
-                        .doubleValue();
+                if(examMarkSem1 != 0 && averageSem1 != 0)
+                    averageSem1 = BigDecimal.valueOf(averageSem1 * 0.75 + examMarkSem1 * 0.25)
+                            .setScale(2, RoundingMode.HALF_UP)
+                            .doubleValue();
+
+                if(examMarkSem2 != 0 && averageSem2 != 0)
+                    averageSem2 = BigDecimal.valueOf(averageSem2 * 0.75 + examMarkSem2 * 0.25)
+                            .setScale(2, RoundingMode.HALF_UP)
+                            .doubleValue();
             }
 
             currentMap.put("name", studentCourses.get(i).get(1, String.class));

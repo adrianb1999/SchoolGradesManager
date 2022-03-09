@@ -48,8 +48,6 @@ public class MarkServiceImpl implements MarkService {
 
     }
     // Custom Query
-
-
     @Override
     public boolean checkIfExamMarkExist(LocalDate markDate, Course course, User student) {
         return markRepository.checkIfExamMarkExist(markDate, course, student);

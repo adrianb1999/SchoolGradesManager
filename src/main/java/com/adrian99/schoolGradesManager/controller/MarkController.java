@@ -60,7 +60,6 @@ public class MarkController {
         if(!student.getRoles().contains("ROLE_STUDENT"))
             throw new ApiRequestException("The user is not a student!");
 
-
         return userService.findMarksByStudent(student);
     }
 
@@ -76,8 +75,9 @@ public class MarkController {
         if(dayOfWeek.equals(DayOfWeek.SUNDAY) || dayOfWeek.equals(DayOfWeek.SATURDAY))
             throw new ApiRequestException("Nu se pot adauga note in weekend!");
 
-        if(markService.checkIfExamMarkExist(LocalDate.parse(info.get("date")), course, student))
-            throw new ApiRequestException("Deja exista o teza in acest semestru!");
+        if(Boolean.parseBoolean(info.get("examMark")))
+            if (markService.checkIfExamMarkExist(LocalDate.parse(info.get("date")), course, student))
+                throw new ApiRequestException("Deja exista o teza in acest semestru!");
 
         mark.setStudent(student);
         mark.setCourse(course);
