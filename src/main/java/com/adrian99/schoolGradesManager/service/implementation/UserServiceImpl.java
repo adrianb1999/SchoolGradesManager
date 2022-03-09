@@ -4,20 +4,26 @@ import com.adrian99.schoolGradesManager.model.Classroom;
 import com.adrian99.schoolGradesManager.model.Course;
 import com.adrian99.schoolGradesManager.model.User;
 import com.adrian99.schoolGradesManager.repository.UserRepository;
+import com.adrian99.schoolGradesManager.repository.VerificationTokenRepository;
 import com.adrian99.schoolGradesManager.service.UserService;
+import com.adrian99.schoolGradesManager.token.VerificationToken;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, VerificationTokenRepository verificationTokenRepository) {
         this.userRepository = userRepository;
+        this.verificationTokenRepository = verificationTokenRepository;
     }
 
     @Override
@@ -110,12 +116,25 @@ public class UserServiceImpl implements UserService {
 
             password.append(c);
         }
-
         return password.toString();
     }
 
     @Override
     public boolean isEmailValid(String email) {
         return email.matches("^(.+)@(\\S+)$");
+    }
+
+    @Override
+    public String generateToken(User user) {
+        String token = UUID.randomUUID().toString();
+
+        VerificationToken verificationToken =
+                new VerificationToken(
+                        token,
+                        user,
+                        LocalDateTime.now().plusHours(24));
+
+        verificationTokenRepository.save(verificationToken);
+        return token;
     }
 }

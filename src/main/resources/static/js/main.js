@@ -1,5 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+    if (document.body.classList.contains("passwordResetFrom")) {
+        document.querySelector("#passwordResetForm").onsubmit = function () {
+            resetPassword()
+            return false
+        }
+    }
+
+    if (document.body.classList.contains("passwordReset")) {
+        document.querySelector("#passwordReset").onsubmit = function () {
+            sendResetPasswordLink()
+            return false
+        }
+    }
+
     if (document.body.classList.contains("login")) {
         document.querySelector("#loginForm").onsubmit = function () {
             login()
@@ -192,7 +206,6 @@ function setMatchText(match, message, textMessageId) {
     }
 }
 
-
 function matchChecking(firstId, secondId, textMessageId) {
 
     let match = document.getElementById(firstId).value === document.getElementById(secondId).value
@@ -225,4 +238,55 @@ function cleanPasswordForm() {
     document.getElementById("confirmPasswordInput").value = ""
     document.getElementById("oldPasswordInput").value = ""
     document.getElementById("passWordMessage").innerHTML = ""
+}
+
+function resetPassword() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const confirmToken = urlParams.get('token')
+
+    let password = document.getElementById("passwordReset").value
+
+    fetch(`/api/user/passwordReset?token=${confirmToken}`, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            'password': password
+        })
+    }).then(response => {
+        if (response.status === 200){
+            showAlert("Email sent!", 'success', 'Success!')
+            window.location.href = "login.html";
+        }
+    }).catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+function sendResetPasswordLink() {
+    let email = document.getElementById("email").value
+
+    fetch('/api/user/resetPasswordLink', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            'email': email
+        })
+    }).then(response => {
+        if (response.status === 200) {
+            showAlert("Email sent!", 'success', 'Success!')
+            window.location.href = "login.html";
+        } else {
+            response.json().then(data =>
+                showAlert(data.message)
+            )
+        }
+    }).catch((error) => {
+        console.error('Error:', error);
+    });
 }
